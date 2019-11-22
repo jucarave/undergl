@@ -14,7 +14,13 @@ class Game {
   private renderTestScene() {
     const gl = this._renderer.gl;
 
-    const vertices = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
+    // x y z    r g b
+    // eslint-disable-next-line prettier/prettier
+    const vertices = [
+      -0.5, -0.5, 0.0,    1.0, 0.0, 0.0, 
+       0.5, -0.5, 0.0,    0.0, 1.0, 0.0,
+       0.0,  0.5, 0.0,    0.0, 0.0, 1.0
+    ];
     const indices = [0, 1, 2];
 
     const vertexBuffer = gl.createBuffer();
@@ -45,7 +51,8 @@ class Game {
     this._renderer.clear();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.vertexAttribPointer(shader.attributes['aPosition'], 3, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shader.attributes['aPosition'], 3, gl.FLOAT, false, 6 * 4, 0);
+    gl.vertexAttribPointer(shader.attributes['aColor'], 3, gl.FLOAT, false, 6 * 4, 3 * 4);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
