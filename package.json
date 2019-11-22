@@ -4,14 +4,23 @@
   "description": "WebGL Old school first person crawler",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./backend/server.js",
+    "lint": "eslint ./src/*.ts ./backend/*.js",
+    "watch": "gulp watch",
+    "dev": "concurrently --kill-others \"npm run watch\" \"npm run start\""
   },
   "author": "Camilo Ramirez (Jucarave)",
   "license": "ISC",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
+  },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "@typescript-eslint/parser": "^2.8.0",
     "browserify": "^16.5.0",
+    "concurrently": "^5.0.0",
     "errorify": "^0.3.1",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",
@@ -20,7 +29,9 @@
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-json": "^2.0.1",
     "eslint-plugin-prettier": "^3.1.1",
+    "express": "^4.17.1",
     "gulp": "^4.0.2",
+    "husky": "^3.1.0",
     "prettier": "^1.19.1",
     "tsify": "^4.0.1",
     "typescript": "^3.7.2",
