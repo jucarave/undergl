@@ -3,6 +3,7 @@ import Matrix4 from 'engine/math/Matrix4';
 
 class Game {
   private _renderer: Renderer;
+  public angle: number = 0;
 
   init() {
     this._renderer = new Renderer(854, 480, document.getElementById('divGame'));
@@ -35,6 +36,11 @@ class Game {
   private loopRender(vertexBuffer: WebGLBuffer, indexBuffer: WebGLBuffer, camera: Matrix4, view: Matrix4) {
     const gl = this._renderer.gl;
     const shader = this._renderer.shader;
+
+    this.angle += 2;
+    view.setIdentity();
+    view.setRotationY(this.angle);
+    view.translate(0, 0, -5);
 
     this._renderer.clear();
 
