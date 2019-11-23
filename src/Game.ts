@@ -1,5 +1,8 @@
 import Renderer from 'engine/Renderer';
-import Matrix4 from 'engine/math/Matrix4';
+import Geometry from 'engine/Geometry';
+import Camera from 'engine/Camera';
+import MaterialBasic from 'engine/materials/MaterialBasic';
+import Material from 'engine/materials/Material';
 
 class Game {
   private _renderer: Renderer;
@@ -12,56 +15,34 @@ class Game {
   }
 
   private renderTestScene() {
-    const gl = this._renderer.gl;
+    const geometry = new Geometry();
 
-    // x y z    r g b
-    // eslint-disable-next-line prettier/prettier
-    const vertices = [
-      -0.5, -0.5, 0.0,    1.0, 0.0, 0.0, 
-       0.5, -0.5, 0.0,    0.0, 1.0, 0.0,
-       0.0,  0.5, 0.0,    0.0, 0.0, 1.0
-    ];
-    const indices = [0, 1, 2];
+    geometry.addVertex(-0.5, -0.5, 0.0).addColor(1.0, 0.0, 0.0, 1.0);
+    geometry.addVertex(0.5, -0.5, 0.0).addColor(0.0, 1.0, 0.0, 1.0);
+    geometry.addVertex(-0.5, 0.5, 0.0).addColor(0.0, 0.0, 1.0, 1.0);
+    geometry.addVertex(0.5, 0.5, 0.0).addColor(1.0, 1.0, 0.0, 1.0);
 
-    const vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    geometry.addTriangle(0, 1, 2).addTriangle(1, 3, 2);
+    geometry.build(this._renderer);
 
-    const indexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    const camera = Camera.createPerspective(60, 854 / 480, 0.1, 1000.0);
 
-    const camera = Matrix4.createPerspective((60 * Math.PI) / 180, 854 / 480, 0.1, 1000.0);
+    const material = new MaterialBasic(this._renderer);
 
-    const view = Matrix4.createIdentity();
-    view.translate(0, 0, -5);
-
-    this.loopRender(vertexBuffer, indexBuffer, camera, view);
+    this.loopRender(geometry, camera, material);
   }
 
-  private loopRender(vertexBuffer: WebGLBuffer, indexBuffer: WebGLBuffer, camera: Matrix4, view: Matrix4) {
-    const gl = this._renderer.gl;
-    const shader = this._renderer.shader;
-
+  private loopRender(geometry: Geometry, camera: Camera, material: Material) {
     this.angle += 2;
-    view.setIdentity();
-    view.setRotationY(this.angle);
-    view.translate(0, 0, -5);
+    camera.transform.setIdentity();
+    camera.transform.setRotationY(this.angle);
+    camera.transform.translate(0, 0, -5);
 
     this._renderer.clear();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.vertexAttribPointer(shader.attributes['aPosition'], 3, gl.FLOAT, false, 6 * 4, 0);
-    gl.vertexAttribPointer(shader.attributes['aColor'], 3, gl.FLOAT, false, 6 * 4, 3 * 4);
+    material.render(camera, geometry);
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-    gl.uniformMatrix4fv(shader.uniforms['uProjection'], false, camera.data);
-    gl.uniformMatrix4fv(shader.uniforms['uView'], false, view.data);
-
-    gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, 0);
-
-    requestAnimationFrame(() => this.loopRender(vertexBuffer, indexBuffer, camera, view));
+    requestAnimationFrame(() => this.loopRender(geometry, camera, material));
   }
 }
 

@@ -5,7 +5,7 @@ const basicShader: ShaderStruct = {
     precision mediump float;
 
     attribute vec3 aPosition;
-    attribute vec3 aColor;
+    attribute vec4 aColor;
 
     uniform mat4 uProjection;
     uniform mat4 uView;
@@ -17,7 +17,7 @@ const basicShader: ShaderStruct = {
 
       gl_Position = uProjection * uView * position;
 
-      vColor = vec4(aColor, 1.0);
+      vColor = aColor;
     }
   `,
 

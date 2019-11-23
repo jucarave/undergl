@@ -129,7 +129,7 @@ class Matrix4 {
   }
 
   public static createPerspective(fov: number, ratio: number, znear: number, zfar: number): Matrix4 {
-    const S = 1 / Math.tan(fov / 2),
+    const S = 1 / Math.tan(degToRad(fov) / 2),
       R = S * ratio,
       A = -zfar / (zfar - znear),
       B = -(zfar * znear) / (zfar - znear);
