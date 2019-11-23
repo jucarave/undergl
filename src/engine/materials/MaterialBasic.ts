@@ -20,7 +20,7 @@ class MaterialBasic extends Material {
     const shader = this._renderer.shader;
 
     gl.uniformMatrix4fv(shader.uniforms['uProjection'], false, camera.projection.data);
-    gl.uniformMatrix4fv(shader.uniforms['uView'], false, camera.transform.data);
+    gl.uniformMatrix4fv(shader.uniforms['uView'], false, camera.viewMatrix.data);
   }
 
   public render(camera: Camera, geometry: Geometry): void {

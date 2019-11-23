@@ -5,6 +5,8 @@ const MATRIX_LENGTH = 16;
 class Matrix4 {
   public data: Array<number>;
 
+  public static helper: Matrix4 = Matrix4.createIdentity();
+
   constructor(...values: Array<number>) {
     if (values.length !== MATRIX_LENGTH) {
       throw new Error(`Matrix4 needs ${MATRIX_LENGTH} values`);
@@ -33,6 +35,14 @@ class Matrix4 {
       this.data[13] = y;
       this.data[14] = z;
     }
+
+    return this;
+  }
+
+  public scale(x: number, y: number, z: number): Matrix4 {
+    this.data[0] *= x;
+    this.data[5] *= y;
+    this.data[10] *= z;
 
     return this;
   }

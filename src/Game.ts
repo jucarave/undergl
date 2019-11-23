@@ -6,7 +6,6 @@ import Material from 'engine/materials/Material';
 
 class Game {
   private _renderer: Renderer;
-  public angle: number = 0;
 
   init() {
     this._renderer = new Renderer(854, 480, document.getElementById('divGame'));
@@ -33,10 +32,9 @@ class Game {
   }
 
   private loopRender(geometry: Geometry, camera: Camera, material: Material) {
-    this.angle += 2;
-    camera.transform.setIdentity();
-    camera.transform.setRotationY(this.angle);
-    camera.transform.translate(0, 0, -5);
+    camera.position.x = 5;
+    camera.position.z = 5;
+    camera.rotation.y += 0.5;
 
     this._renderer.clear();
 
