@@ -45,11 +45,9 @@ class MaterialBasic extends Material {
   }
 
   private _uploadTexture() {
-    const gl = this._renderer.gl;
     const shader = this._renderer.shader;
 
-    gl.bindTexture(gl.TEXTURE_2D, this._texture.texture);
-    gl.uniform1i(shader.uniforms['uTexture'], 0);
+    this._renderer.bindTexture(this._texture, shader.uniforms['uTexture']);
   }
 
   public render(camera: Camera, entity: Entity, geometry: Geometry): void {
