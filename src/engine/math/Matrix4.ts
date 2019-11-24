@@ -25,6 +25,10 @@ class Matrix4 {
     return this;
   }
 
+  public copy(matrix4: Matrix4): Matrix4 {
+    return this.set(...matrix4.data);
+  }
+
   public translate(x: number, y: number, z: number, relative: boolean = false): Matrix4 {
     if (relative) {
       this.data[12] += x;

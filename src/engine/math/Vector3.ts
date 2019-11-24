@@ -52,6 +52,10 @@ class Vector3 {
 
     this.onChange.dispatch();
   }
+
+  public static get zero(): Vector3 {
+    return new Vector3(0, 0, 0);
+  }
 }
 
 export default Vector3;
