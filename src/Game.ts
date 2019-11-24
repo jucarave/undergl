@@ -83,6 +83,8 @@ class Game {
     const geometry = this._createCube();
 
     const material = new MaterialBasic(Texture.getTexture('textures'));
+    material.v4UV = [0.5, 0.0, 0.5, 1.0];
+    material.v2Repeat = [3, 3];
 
     const entity = new Entity(Vector3.zero, geometry, material);
 

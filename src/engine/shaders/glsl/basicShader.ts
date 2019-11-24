@@ -10,26 +10,30 @@ const basicShader: ShaderStruct = {
     uniform mat4 uProjection;
     uniform mat4 uView;
 
-    varying vec2 vUV;
+    varying vec2 vTexCoord;
 
     void main(void) {
       vec4 position = vec4(aPosition, 1.0);
 
       gl_Position = uProjection * uView * position;
 
-      vUV = aTexCoord;
+      vTexCoord = aTexCoord;
     }
   `,
 
   fragmentShader: `
     precision mediump float;
 
+    uniform vec4 uUV;
+    uniform vec2 uRepeat;
     uniform sampler2D uTexture;
 
-    varying vec2 vUV;
+    varying vec2 vTexCoord;
 
     void main(void) {
-      gl_FragColor = texture2D(uTexture, vUV);
+      vec2 coords = mod(vTexCoord.xy * uRepeat.xy, 1.0) * uUV.zw + uUV.xy;
+
+      gl_FragColor = texture2D(uTexture, coords);
     }
   `
 };

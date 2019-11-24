@@ -12,10 +12,15 @@ const TEX_COORDS_OFFSET = VERTEX_SIZE * FLOAT_SIZE;
 class MaterialBasic extends Material {
   private _texture: Texture;
 
+  public v4UV: Array<number>;
+  public v2Repeat: Array<number>;
+
   constructor(texture: Texture) {
     super();
 
     this._texture = texture;
+    this.v4UV = [0.0, 0.0, 1.0, 1.0];
+    this.v2Repeat = [1.0, 1.0];
   }
 
   private _renderGeometry(geometry: Geometry) {
@@ -45,9 +50,13 @@ class MaterialBasic extends Material {
   }
 
   private _uploadTexture() {
+    const gl = this._renderer.gl;
     const shader = this._renderer.shader;
 
     this._renderer.bindTexture(this._texture, shader.uniforms['uTexture']);
+
+    gl.uniform4fv(shader.uniforms['uUV'], this.v4UV);
+    gl.uniform2fv(shader.uniforms['uRepeat'], this.v2Repeat);
   }
 
   public render(camera: Camera, entity: Entity, geometry: Geometry): void {
