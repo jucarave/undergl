@@ -4,10 +4,11 @@
   "description": "WebGL Old school first person crawler",
   "main": "index.js",
   "scripts": {
-    "start": "node ./backend/server.js",
+    "build": "gulp bundle",
+    "start": "npm run build && node ./backend/server.js",
     "lint": "eslint ./src/*.ts ./backend/*.js",
     "watch": "gulp watch",
-    "dev": "concurrently --kill-others \"npm run watch\" \"npm run start\""
+    "dev": "concurrently --kill-others \"npm run watch\" \"node ./backend/server.js\""
   },
   "author": "Camilo Ramirez (Jucarave)",
   "license": "ISC",
