@@ -4,7 +4,7 @@ import Geometry from 'engine/Geometry';
 import Entity from 'engine/Entity';
 
 class MaterialBasic extends Material {
-  private renderGeometry(geometry: Geometry) {
+  private _renderGeometry(geometry: Geometry) {
     const gl = this._renderer.gl;
     const shader = this._renderer.shader;
 
@@ -16,14 +16,14 @@ class MaterialBasic extends Material {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, geometry.indexBuffer);
   }
 
-  private renderCameraProperties(camera: Camera) {
+  private _renderCameraProperties(camera: Camera) {
     const gl = this._renderer.gl;
     const shader = this._renderer.shader;
 
     gl.uniformMatrix4fv(shader.uniforms['uProjection'], false, camera.projection.data);
   }
 
-  private renderEntityProperties(entity: Entity) {
+  private _renderEntityProperties(entity: Entity) {
     const gl = this._renderer.gl;
     const shader = this._renderer.shader;
 
@@ -33,9 +33,9 @@ class MaterialBasic extends Material {
   public render(camera: Camera, entity: Entity, geometry: Geometry): void {
     const gl = this._renderer.gl;
 
-    this.renderGeometry(geometry);
-    this.renderCameraProperties(camera);
-    this.renderEntityProperties(entity);
+    this._renderGeometry(geometry);
+    this._renderCameraProperties(camera);
+    this._renderEntityProperties(entity);
 
     gl.drawElements(gl.TRIANGLES, geometry.trianglesSize, gl.UNSIGNED_SHORT, 0);
   }
