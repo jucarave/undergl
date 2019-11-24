@@ -3,6 +3,11 @@ import Camera from 'engine/Camera';
 import Geometry from 'engine/Geometry';
 import Entity from 'engine/Entity';
 import Texture from 'engine/Texture';
+import { VERTEX_SIZE, TEX_COORDS_SIZE, FLOAT_SIZE } from 'engine/Constants';
+
+const STRIDE = (VERTEX_SIZE + TEX_COORDS_SIZE) * FLOAT_SIZE;
+const VERTEX_OFFSET = 0;
+const TEX_COORDS_OFFSET = VERTEX_SIZE * FLOAT_SIZE;
 
 class MaterialBasic extends Material {
   private _texture: Texture;
@@ -19,8 +24,8 @@ class MaterialBasic extends Material {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, geometry.vertexBuffer);
 
-    gl.vertexAttribPointer(shader.attributes['aPosition'], 3, gl.FLOAT, false, 5 * 4, 0);
-    gl.vertexAttribPointer(shader.attributes['aTexCoord'], 2, gl.FLOAT, false, 5 * 4, 3 * 4);
+    gl.vertexAttribPointer(shader.attributes['aPosition'], VERTEX_SIZE, gl.FLOAT, false, STRIDE, VERTEX_OFFSET);
+    gl.vertexAttribPointer(shader.attributes['aTexCoord'], TEX_COORDS_SIZE, gl.FLOAT, false, STRIDE, TEX_COORDS_OFFSET);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, geometry.indexBuffer);
   }
