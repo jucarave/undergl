@@ -30,8 +30,14 @@ class Geometry {
     return this;
   }
 
-  public build(renderer: Renderer): Geometry {
-    this._renderer = renderer;
+  public addTexCoord(x: number, y: number): Geometry {
+    this._vertexData.push(x, y);
+
+    return this;
+  }
+
+  public build(): Geometry {
+    this._renderer = Renderer.instance;
 
     const gl = this._renderer.gl;
 

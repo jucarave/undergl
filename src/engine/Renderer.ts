@@ -7,7 +7,11 @@ class Renderer {
   private _basicShader: Shader;
   private _shader: Shader;
 
+  public static instance: Renderer;
+
   constructor(width: number, height: number, container?: HTMLElement) {
+    Renderer.instance = this;
+
     this._createCanvas(width, height, container);
     this._initGL();
     this._loadBasicShader();
@@ -42,7 +46,7 @@ class Renderer {
   }
 
   private _loadBasicShader() {
-    this._basicShader = new Shader(basicShader, this);
+    this._basicShader = new Shader(basicShader);
     this._basicShader.useProgram();
 
     this._shader = this._basicShader;

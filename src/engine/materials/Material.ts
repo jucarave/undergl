@@ -6,8 +6,8 @@ import Entity from 'engine/Entity';
 abstract class Material {
   protected _renderer: Renderer;
 
-  constructor(renderer: Renderer) {
-    this._renderer = renderer;
+  constructor() {
+    this._renderer = Renderer.instance;
   }
 
   public abstract render(camera: Camera, entity: Entity, geometry: Geometry): void;

@@ -23,8 +23,8 @@ class Shader {
 
   public static maxAttribLength: number = 0;
 
-  constructor(shaderInfo: ShaderStruct, renderer: Renderer) {
-    this._renderer = renderer;
+  constructor(shaderInfo: ShaderStruct) {
+    this._renderer = Renderer.instance;
 
     this._compileShaders(shaderInfo);
     this._getShaderAttributes(shaderInfo);

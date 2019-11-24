@@ -3,7 +3,7 @@ const path = require('path');
 
 const app = express();
 
-app.get('/js/*', (req, res) => {
+app.get(/^\/(js|img)\/(.+)/, (req, res) => {
   const urlPath = req.path;
   res.sendFile(path.resolve(app.get('appPath') + '/../dist/' + urlPath));
 });
