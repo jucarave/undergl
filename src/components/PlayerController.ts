@@ -2,11 +2,13 @@ import Component from 'engine/Component';
 import Input from 'engine/system/Input';
 import Camera from 'engine/Camera';
 import { degToRad } from 'engine/math/Math';
+import Vector3 from 'engine/math/Vector3';
 
 type KEYS = 'NONE' | 'LEFT' | 'UP' | 'RIGHT' | 'DOWN';
 
 class PlayerController extends Component {
   private _camera: Camera;
+  private _mouse: Vector3;
   private _keys = {
     UP: 0,
     RIGHT: 0,
@@ -18,11 +20,13 @@ class PlayerController extends Component {
     super();
 
     this._camera = camera;
+    this._mouse = Vector3.zero;
   }
 
   public init(): void {
     Input.onKeyDown.add(this._onKeyDown, this);
     Input.onKeyUp.add(this._onKeyUp, this);
+    Input.onMouseMove.add(this._onMouseMove, this);
   }
 
   public destroy(): void {
@@ -64,6 +68,15 @@ class PlayerController extends Component {
     this._keys[key] = 0;
   }
 
+  private _onMouseMove(ev: MouseEvent): void {
+    if (!Input.isPointerLocked) {
+      return;
+    }
+
+    this._mouse.x = ev.movementX;
+    this._mouse.y = ev.movementY;
+  }
+
   private _updateMovement() {
     const h = this._keys.RIGHT - this._keys.LEFT;
     const v = this._keys.UP - this._keys.DOWN;
@@ -76,14 +89,23 @@ class PlayerController extends Component {
     }
   }
 
+  private _updateRotation() {
+    this._camera.rotation.x -= this._mouse.y;
+    this._entity.rotation.y -= this._mouse.x;
+
+    this._mouse.x = 0;
+    this._mouse.y = 0;
+  }
+
   public update() {
     this._updateMovement();
+    this._updateRotation();
 
     const p = this._entity.position;
     const r = this._entity.rotation;
 
     this._camera.position.set(p.x, p.y + 0.5, p.z);
-    this._camera.rotation.set(0, r.y - 90, 0);
+    this._camera.rotation.y = r.y - 90;
   }
 }
 

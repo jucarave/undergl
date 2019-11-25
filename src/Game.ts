@@ -99,7 +99,7 @@ class Game {
     const cubeGeometry = this._createCube();
     const cubeMaterial = new MaterialBasic(Texture.getTexture('textures'));
     cubeMaterial.v4UV = [0.5, 0.0, 0.5, 1.0];
-    cubeMaterial.v2Repeat = [3, 3];
+    cubeMaterial.v2Repeat = [1, 1];
     const cube = new Entity(new Vector3(0, 0.5, 0), cubeGeometry, cubeMaterial);
 
     const floorGeometry = this._createFloor();
