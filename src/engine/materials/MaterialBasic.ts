@@ -4,19 +4,20 @@ import Geometry from 'engine/Geometry';
 import Entity from 'engine/Entity';
 import Texture from 'engine/Texture';
 import { VERTEX_SIZE, TEX_COORDS_SIZE, FLOAT_SIZE } from 'engine/Constants';
+import Renderer from 'engine/Renderer';
 
 const STRIDE = (VERTEX_SIZE + TEX_COORDS_SIZE) * FLOAT_SIZE;
 const VERTEX_OFFSET = 0;
 const TEX_COORDS_OFFSET = VERTEX_SIZE * FLOAT_SIZE;
 
 class MaterialBasic extends Material {
-  private _texture: Texture;
-
   public v4UV: Array<number>;
   public v2Repeat: Array<number>;
 
   constructor(texture: Texture) {
     super();
+
+    this._shader = Renderer.instance.basicShader;
 
     this._texture = texture;
     this.v4UV = [0.0, 0.0, 1.0, 1.0];
@@ -61,6 +62,8 @@ class MaterialBasic extends Material {
 
   public render(camera: Camera, entity: Entity, geometry: Geometry): void {
     const gl = this._renderer.gl;
+
+    this._renderer.useShader(this._shader);
 
     this._renderGeometry(geometry);
     this._renderCameraProperties(camera);

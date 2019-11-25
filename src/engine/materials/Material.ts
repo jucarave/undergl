@@ -3,9 +3,13 @@ import Geometry from 'engine/Geometry';
 import Renderer from 'engine/Renderer';
 import Entity from 'engine/Entity';
 import { createUUID } from 'engine/system/Utils';
+import Texture from 'engine/Texture';
+import Shader from 'engine/shaders/Shader';
 
 abstract class Material {
+  protected _texture: Texture;
   protected _renderer: Renderer;
+  protected _shader: Shader;
 
   public readonly id: string;
 
@@ -16,6 +20,14 @@ abstract class Material {
   }
 
   public abstract render(camera: Camera, entity: Entity, geometry: Geometry): void;
+
+  public get texture(): Texture {
+    return this._texture;
+  }
+
+  public get shader(): Shader {
+    return this._shader;
+  }
 }
 
 export default Material;

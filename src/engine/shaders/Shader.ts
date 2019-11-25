@@ -1,5 +1,6 @@
 import ShaderStruct from './ShaderStruct';
 import Renderer from 'engine/Renderer';
+import { createUUID } from 'engine/system/Utils';
 
 interface StructMap {
   [index: string]: Array<string>;
@@ -21,9 +22,14 @@ class Shader {
   public attributes: Attributes;
   public uniforms: Uniforms;
 
+  public readonly id: string;
+
+  public static lastShader: Shader;
   public static maxAttribLength: number = 0;
 
   constructor(shaderInfo: ShaderStruct) {
+    this.id = createUUID();
+
     this._renderer = Renderer.instance;
 
     this._compileShaders(shaderInfo);
@@ -177,8 +183,14 @@ class Shader {
   }
 
   public useProgram() {
+    if (Shader.lastShader && Shader.lastShader.id === this.id) {
+      return;
+    }
+
     const gl = this._renderer.gl;
     gl.useProgram(this._program);
+
+    Shader.lastShader = this;
 
     for (let i = 0; i < Shader.maxAttribLength; i++) {
       if (i < this.attributesCount) {

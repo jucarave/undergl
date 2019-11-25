@@ -58,6 +58,11 @@ class Renderer {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
 
+  public useShader(shader: Shader) {
+    shader.useProgram();
+    this._shader = shader;
+  }
+
   public bindTexture(texture: Texture, uniform: WebGLUniformLocation) {
     if (this._lastTexture === texture.key) {
       return;
@@ -73,6 +78,10 @@ class Renderer {
 
   public get shader(): Shader {
     return this._shader;
+  }
+
+  public get basicShader(): Shader {
+    return this._basicShader;
   }
 }
 

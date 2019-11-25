@@ -80,21 +80,40 @@ class Game {
     return geometry;
   }
 
+  private _createFloor(): Geometry {
+    const geometry = new Geometry();
+
+    geometry.addVertex(-5, 0.5, 5).addTexCoord(0.0, 1.0);
+    geometry.addVertex(5, 0.5, 5).addTexCoord(1.0, 1.0);
+    geometry.addVertex(-5, 0.5, -5).addTexCoord(0.0, 0.0);
+    geometry.addVertex(5, 0.5, -5).addTexCoord(1.0, 0.0);
+    geometry.addTriangle(0, 1, 2).addTriangle(1, 3, 2);
+
+    geometry.build();
+
+    return geometry;
+  }
+
   private renderTestScene() {
-    const geometry = this._createCube();
+    const cubeGeometry = this._createCube();
+    const cubeMaterial = new MaterialBasic(Texture.getTexture('textures'));
+    cubeMaterial.v4UV = [0.5, 0.0, 0.5, 1.0];
+    cubeMaterial.v2Repeat = [3, 3];
+    const cube = new Entity(new Vector3(0, 1, 0), cubeGeometry, cubeMaterial);
 
-    const material = new MaterialBasic(Texture.getTexture('textures'));
-    material.v4UV = [0.5, 0.0, 0.5, 1.0];
-    material.v2Repeat = [3, 3];
-
-    const entity = new Entity(Vector3.zero, geometry, material);
+    const floorGeometry = this._createFloor();
+    const floorMaterial = new MaterialBasic(Texture.getTexture('textures'));
+    floorMaterial.v4UV = [0.0, 0.0, 0.5, 1.0];
+    floorMaterial.v2Repeat = [10, 10];
+    const floor = new Entity(Vector3.zero, floorGeometry, floorMaterial);
 
     const camera = Camera.createPerspective(60, 854 / 480, 0.1, 1000.0);
-    camera.position.set(3, 3, 3);
+    camera.position.set(5, 5, 5);
     camera.rotation.set(-35, 45, 0);
 
     const scene = new Scene();
-    scene.addEntity(entity);
+    scene.addEntity(cube);
+    scene.addEntity(floor);
     scene.setCamera(camera);
 
     this.loopRender(scene);

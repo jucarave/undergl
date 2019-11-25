@@ -1,4 +1,5 @@
 import Renderer from 'engine/Renderer';
+import { createUUID } from './system/Utils';
 
 interface TexturesMap {
   [index: string]: Texture;
@@ -11,9 +12,11 @@ class Texture {
 
   private static textures: TexturesMap = {};
 
+  public readonly id: string;
   public readonly key: string;
 
   constructor(key: string, src: string) {
+    this.id = createUUID();
     this.key = key;
     this._ready = false;
 

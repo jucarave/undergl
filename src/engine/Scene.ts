@@ -24,11 +24,14 @@ class Scene {
       entity.init();
     }
 
-    const matId = entity.material.id;
-    if (this._renderEntities[matId]) {
-      this._renderEntities[matId].push(entity);
-    } else {
-      this._renderEntities[matId] = [entity];
+    if (entity.material && entity.material.texture) {
+      const texId = entity.material.shader.id + entity.material.texture.id;
+
+      if (this._renderEntities[texId]) {
+        this._renderEntities[texId].push(entity);
+      } else {
+        this._renderEntities[texId] = [entity];
+      }
     }
 
     return this;
@@ -70,8 +73,8 @@ class Scene {
       entity.update();
     }
 
-    for (const matId in this._renderEntities) {
-      this._render(this._renderEntities[matId]);
+    for (const texId in this._renderEntities) {
+      this._render(this._renderEntities[texId]);
     }
 
     return this;
