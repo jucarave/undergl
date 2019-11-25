@@ -5,6 +5,7 @@ import MaterialBasic from 'engine/materials/MaterialBasic';
 import Entity from 'engine/Entity';
 import Vector3 from 'engine/math/Vector3';
 import Texture from 'engine/Texture';
+import Scene from 'engine/Scene';
 
 class Game {
   private _renderer: Renderer;
@@ -89,23 +90,22 @@ class Game {
     const entity = new Entity(Vector3.zero, geometry, material);
 
     const camera = Camera.createPerspective(60, 854 / 480, 0.1, 1000.0);
-
-    this.loopRender(entity, camera);
-  }
-
-  private loopRender(entity: Entity, camera: Camera) {
-    camera.position.set(5, 5, 5);
+    camera.position.set(3, 3, 3);
     camera.rotation.set(-35, 45, 0);
 
-    entity.rotation.x -= 1;
-    entity.rotation.y += 1;
-    entity.rotation.z += 1;
+    const scene = new Scene();
+    scene.addEntity(entity);
+    scene.setCamera(camera);
 
+    this.loopRender(scene);
+  }
+
+  private loopRender(scene: Scene) {
     this._renderer.clear();
 
-    entity.render(camera);
+    scene.update();
 
-    requestAnimationFrame(() => this.loopRender(entity, camera));
+    requestAnimationFrame(() => this.loopRender(scene));
   }
 }
 
