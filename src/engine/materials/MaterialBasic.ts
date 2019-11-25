@@ -3,7 +3,7 @@ import Camera from 'engine/Camera';
 import Geometry from 'engine/Geometry';
 import Entity from 'engine/Entity';
 import Texture from 'engine/Texture';
-import { VERTEX_SIZE, TEX_COORDS_SIZE, FLOAT_SIZE } from 'engine/Constants';
+import { VERTEX_SIZE, TEX_COORDS_SIZE, FLOAT_SIZE } from 'engine/system/Constants';
 import Renderer from 'engine/Renderer';
 
 const STRIDE = (VERTEX_SIZE + TEX_COORDS_SIZE) * FLOAT_SIZE;

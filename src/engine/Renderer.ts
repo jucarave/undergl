@@ -1,9 +1,10 @@
 import Shader from './shaders/Shader';
 import basicShader from './shaders/glsl/basicShader';
 import Texture from './Texture';
+import Input from './system/Input';
 
 class Renderer {
-  private canvas: HTMLCanvasElement;
+  private _canvas: HTMLCanvasElement;
   private _gl: WebGLRenderingContext;
   private _basicShader: Shader;
   private _shader: Shader;
@@ -17,6 +18,8 @@ class Renderer {
     this._createCanvas(width, height, container);
     this._initGL();
     this._loadBasicShader();
+
+    Input.init(this._canvas);
   }
 
   private _createCanvas(width: number, height: number, container?: HTMLElement) {
@@ -29,11 +32,11 @@ class Renderer {
       container.appendChild(canvas);
     }
 
-    this.canvas = canvas;
+    this._canvas = canvas;
   }
 
   private _initGL() {
-    const gl = this.canvas.getContext('webgl');
+    const gl = this._canvas.getContext('webgl');
 
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);

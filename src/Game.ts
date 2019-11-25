@@ -6,6 +6,7 @@ import Entity from 'engine/Entity';
 import Vector3 from 'engine/math/Vector3';
 import Texture from 'engine/Texture';
 import Scene from 'engine/Scene';
+import PlayerController from 'components/PlayerController';
 
 class Game {
   private _renderer: Renderer;
@@ -83,10 +84,10 @@ class Game {
   private _createFloor(): Geometry {
     const geometry = new Geometry();
 
-    geometry.addVertex(-5, 0.5, 5).addTexCoord(0.0, 1.0);
-    geometry.addVertex(5, 0.5, 5).addTexCoord(1.0, 1.0);
-    geometry.addVertex(-5, 0.5, -5).addTexCoord(0.0, 0.0);
-    geometry.addVertex(5, 0.5, -5).addTexCoord(1.0, 0.0);
+    geometry.addVertex(-5, 0, 5).addTexCoord(0.0, 1.0);
+    geometry.addVertex(5, 0, 5).addTexCoord(1.0, 1.0);
+    geometry.addVertex(-5, 0, -5).addTexCoord(0.0, 0.0);
+    geometry.addVertex(5, 0, -5).addTexCoord(1.0, 0.0);
     geometry.addTriangle(0, 1, 2).addTriangle(1, 3, 2);
 
     geometry.build();
@@ -99,7 +100,7 @@ class Game {
     const cubeMaterial = new MaterialBasic(Texture.getTexture('textures'));
     cubeMaterial.v4UV = [0.5, 0.0, 0.5, 1.0];
     cubeMaterial.v2Repeat = [3, 3];
-    const cube = new Entity(new Vector3(0, 1, 0), cubeGeometry, cubeMaterial);
+    const cube = new Entity(new Vector3(0, 0.5, 0), cubeGeometry, cubeMaterial);
 
     const floorGeometry = this._createFloor();
     const floorMaterial = new MaterialBasic(Texture.getTexture('textures'));
@@ -108,12 +109,15 @@ class Game {
     const floor = new Entity(Vector3.zero, floorGeometry, floorMaterial);
 
     const camera = Camera.createPerspective(60, 854 / 480, 0.1, 1000.0);
-    camera.position.set(5, 5, 5);
-    camera.rotation.set(-35, 45, 0);
+
+    const player = new Entity(new Vector3(-3, 0, 3));
+    player.rotation.y = 45;
+    player.addComponent(new PlayerController(camera));
 
     const scene = new Scene();
     scene.addEntity(cube);
     scene.addEntity(floor);
+    scene.addEntity(player);
     scene.setCamera(camera);
 
     this.loopRender(scene);

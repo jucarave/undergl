@@ -27,14 +27,16 @@ class Entity {
     this._worldMatrix = Matrix4.createIdentity();
 
     this.position = position;
-    this.position.onChange.add(() => (this._updateTransformMatrix = true));
+    this.position.onChange.add(() => (this._updateTransformMatrix = true), this);
 
     this.rotation = Vector3.zero;
-    this.rotation.onChange.add(() => (this._updateTransformMatrix = true));
+    this.rotation.onChange.add(() => (this._updateTransformMatrix = true), this);
   }
 
   public addComponent(component: Component): void {
     this._components.push(component);
+
+    component.entity = this;
 
     if (this._started) {
       component.init();
@@ -48,6 +50,13 @@ class Entity {
     }
 
     this._started = true;
+  }
+
+  public destroy(): void {
+    const len = this._components.length;
+    for (let i = 0; i < len; i++) {
+      this._components[i].destroy();
+    }
   }
 
   public update(): void {

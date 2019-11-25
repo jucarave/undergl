@@ -55,6 +55,16 @@ class Scene {
     return this;
   }
 
+  public destroy(): Scene {
+    const len = this._entities.length;
+    for (let i = 0; i < len; i++) {
+      const entity = this._entities[i];
+      entity.destroy();
+    }
+
+    return this;
+  }
+
   protected _render(entities: Array<Entity>): void {
     const len = entities.length;
     for (let i = 0; i < len; i++) {

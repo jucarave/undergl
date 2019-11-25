@@ -16,10 +16,10 @@ class Camera {
     this._updateViewMatrix = true;
 
     this.position = new Vector3(0, 0, 0);
-    this.position.onChange.add(() => (this._updateViewMatrix = true));
+    this.position.onChange.add(() => (this._updateViewMatrix = true), this);
 
     this.rotation = new Vector3(0, 0, 0);
-    this.rotation.onChange.add(() => (this._updateViewMatrix = true));
+    this.rotation.onChange.add(() => (this._updateViewMatrix = true), this);
   }
 
   public static createPerspective(fov: number, ratio: number, znear: number, zfar: number): Camera {
