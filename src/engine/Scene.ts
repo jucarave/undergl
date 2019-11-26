@@ -1,5 +1,6 @@
 import Entity from './Entity';
 import Camera from './Camera';
+import Time from './system/Time';
 
 interface RenderEntitiesMap {
   [index: string]: Array<Entity>;
@@ -76,6 +77,8 @@ class Scene {
     if (!this._started) {
       this.init();
     }
+
+    Time.update();
 
     const len = this._entities.length;
     for (let i = 0; i < len; i++) {

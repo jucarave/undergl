@@ -3,12 +3,15 @@ import Input from 'engine/system/Input';
 import Camera from 'engine/Camera';
 import { degToRad } from 'engine/math/Math';
 import Vector3 from 'engine/math/Vector3';
+import Time from 'engine/system/Time';
+import CONFIG from 'Config';
 
 type KEYS = 'NONE' | 'LEFT' | 'UP' | 'RIGHT' | 'DOWN';
 
 class PlayerController extends Component {
   private _camera: Camera;
   private _mouse: Vector3;
+  private _speed: number;
   private _keys = {
     UP: 0,
     RIGHT: 0,
@@ -21,6 +24,7 @@ class PlayerController extends Component {
 
     this._camera = camera;
     this._mouse = Vector3.zero;
+    this._speed = 6;
   }
 
   public init(): void {
@@ -83,15 +87,22 @@ class PlayerController extends Component {
 
     if (h !== 0.0 || v != 0.0) {
       const ang = Math.atan2(v, h) - Math.PI / 2 + degToRad(this._entity.rotation.y);
+      const speed = this._speed * Time.deltaTime;
 
-      this._entity.position.x += Math.cos(ang) * 0.3;
-      this._entity.position.z -= Math.sin(ang) * 0.3;
+      this._entity.position.x += Math.cos(ang) * speed;
+      this._entity.position.z -= Math.sin(ang) * speed;
     }
   }
 
   private _updateRotation() {
-    this._camera.rotation.x -= this._mouse.y;
-    this._entity.rotation.y -= this._mouse.x;
+    this._camera.rotation.x -= this._mouse.y * CONFIG.mouseSensitivity * Time.deltaTime;
+    this._entity.rotation.y -= this._mouse.x * CONFIG.mouseSensitivity * Time.deltaTime;
+
+    if (this._camera.rotation.x > 60) {
+      this._camera.rotation.x = 60;
+    } else if (this._camera.rotation.x < -60) {
+      this._camera.rotation.x = -60;
+    }
 
     this._mouse.x = 0;
     this._mouse.y = 0;
@@ -104,7 +115,7 @@ class PlayerController extends Component {
     const p = this._entity.position;
     const r = this._entity.rotation;
 
-    this._camera.position.set(p.x, p.y + 0.5, p.z);
+    this._camera.position.set(p.x, p.y + 1.7, p.z);
     this._camera.rotation.y = r.y - 90;
   }
 }
