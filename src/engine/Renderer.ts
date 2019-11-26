@@ -51,7 +51,7 @@ class Renderer {
   }
 
   private _loadBasicShader() {
-    this._basicShader = new Shader(basicShader);
+    this._basicShader = new Shader('basicS', basicShader);
     this._basicShader.useProgram();
 
     this._shader = this._basicShader;

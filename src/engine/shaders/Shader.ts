@@ -23,12 +23,14 @@ class Shader {
   public uniforms: Uniforms;
 
   public readonly id: string;
+  public readonly key: string;
 
   public static lastShader: Shader;
   public static maxAttribLength: number = 0;
 
-  constructor(shaderInfo: ShaderStruct) {
+  constructor(key: string, shaderInfo: ShaderStruct) {
     this.id = createUUID();
+    this.key = key;
 
     this._renderer = Renderer.instance;
 

@@ -26,7 +26,7 @@ class Scene {
     }
 
     if (entity.material && entity.material.texture) {
-      const texId = entity.material.shader.id + entity.material.texture.id;
+      const texId = entity.material.shader.key + entity.material.texture.key;
 
       if (this._renderEntities[texId]) {
         this._renderEntities[texId].push(entity);
