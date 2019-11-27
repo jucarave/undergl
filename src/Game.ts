@@ -1,5 +1,5 @@
 import Renderer from 'engine/Renderer';
-import Geometry from 'engine/Geometry';
+import Geometry from 'engine/geometries/Geometry';
 import Camera from 'engine/Camera';
 import MaterialBasic from 'engine/materials/MaterialBasic';
 import Entity from 'engine/Entity';
@@ -7,6 +7,8 @@ import Vector3 from 'engine/math/Vector3';
 import Texture from 'engine/Texture';
 import Scene from 'engine/Scene';
 import PlayerController from 'components/PlayerController';
+import MaterialSkybox from 'engine/materials/MaterialSkybox';
+import GeometrySphere from 'engine/geometries/GeometrySphere';
 
 class Game {
   private _renderer: Renderer;
@@ -19,6 +21,7 @@ class Game {
 
   private _loadData(): void {
     new Texture('textures', 'img/textures.png');
+    new Texture('skybox', 'img/skybox.png', this._renderer.gl.LINEAR);
 
     const wait = () => {
       if (Texture.areTexturesReady()) {
@@ -84,10 +87,10 @@ class Game {
   private _createFloor(): Geometry {
     const geometry = new Geometry();
 
-    geometry.addVertex(-5, 0, 5).addTexCoord(0.0, 1.0);
-    geometry.addVertex(5, 0, 5).addTexCoord(1.0, 1.0);
-    geometry.addVertex(-5, 0, -5).addTexCoord(0.0, 0.0);
-    geometry.addVertex(5, 0, -5).addTexCoord(1.0, 0.0);
+    geometry.addVertex(-500, 0, 500).addTexCoord(0.0, 1.0);
+    geometry.addVertex(500, 0, 500).addTexCoord(1.0, 1.0);
+    geometry.addVertex(-500, 0, -500).addTexCoord(0.0, 0.0);
+    geometry.addVertex(500, 0, -500).addTexCoord(1.0, 0.0);
     geometry.addTriangle(0, 1, 2).addTriangle(1, 3, 2);
 
     geometry.build();
@@ -102,10 +105,14 @@ class Game {
     cubeMaterial.v2Repeat = [1, 1];
     const cube = new Entity(new Vector3(0, 0.5, 0), cubeGeometry, cubeMaterial);
 
+    const skyboxGeo = new GeometrySphere(900, 32, 16, true);
+    const skyboxMat = new MaterialSkybox(Texture.getTexture('skybox'));
+    const skybox = new Entity(new Vector3(0, 2, 0), skyboxGeo, skyboxMat);
+
     const floorGeometry = this._createFloor();
     const floorMaterial = new MaterialBasic(Texture.getTexture('textures'));
     floorMaterial.v4UV = [0.0, 0.0, 0.5, 1.0];
-    floorMaterial.v2Repeat = [10, 10];
+    floorMaterial.v2Repeat = [1000, 1000];
     const floor = new Entity(Vector3.zero, floorGeometry, floorMaterial);
 
     const camera = Camera.createPerspective(60, 854 / 480, 0.1, 1000.0);
@@ -116,6 +123,7 @@ class Game {
 
     const scene = new Scene();
     scene.addEntity(cube);
+    scene.addEntity(skybox);
     scene.addEntity(floor);
     scene.addEntity(player);
     scene.setCamera(camera);

@@ -1,4 +1,4 @@
-import Geometry from './Geometry';
+import Geometry from './geometries/Geometry';
 import Material from './materials/Material';
 import Vector3 from './math/Vector3';
 import Camera from './Camera';

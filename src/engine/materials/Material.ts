@@ -1,5 +1,5 @@
 import Camera from 'engine/Camera';
-import Geometry from 'engine/Geometry';
+import Geometry from 'engine/geometries/Geometry';
 import Renderer from 'engine/Renderer';
 import Entity from 'engine/Entity';
 import { createUUID } from 'engine/system/Utils';

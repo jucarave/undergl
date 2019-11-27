@@ -2,11 +2,13 @@ import Shader from './shaders/Shader';
 import basicShader from './shaders/glsl/basicShader';
 import Texture from './Texture';
 import Input from './system/Input';
+import skyboxShader from './shaders/glsl/skyboxShader';
 
 class Renderer {
   private _canvas: HTMLCanvasElement;
   private _gl: WebGLRenderingContext;
   private _basicShader: Shader;
+  private _skyboxShader: Shader;
   private _shader: Shader;
   private _lastTexture: string;
 
@@ -17,7 +19,7 @@ class Renderer {
 
     this._createCanvas(width, height, container);
     this._initGL();
-    this._loadBasicShader();
+    this._loadShaders();
 
     Input.init(this._canvas);
   }
@@ -50,9 +52,11 @@ class Renderer {
     this._gl = gl;
   }
 
-  private _loadBasicShader() {
+  private _loadShaders() {
     this._basicShader = new Shader('basicS', basicShader);
     this._basicShader.useProgram();
+
+    this._skyboxShader = new Shader('skyboxS', skyboxShader);
 
     this._shader = this._basicShader;
   }
@@ -85,6 +89,10 @@ class Renderer {
 
   public get basicShader(): Shader {
     return this._basicShader;
+  }
+
+  public get skyboxShader(): Shader {
+    return this._skyboxShader;
   }
 }
 
