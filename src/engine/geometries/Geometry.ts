@@ -1,12 +1,12 @@
 import Renderer from 'engine/Renderer';
 
 class Geometry {
-  private _renderer: Renderer;
-  private _vertexData: Array<number>;
-  private _indices: Array<number>;
-  private _vertexBuffer: WebGLBuffer;
-  private _indexBuffer: WebGLBuffer;
-  private _trianglesSize: number;
+  protected _renderer: Renderer;
+  protected _vertexData: Array<number>;
+  protected _indices: Array<number>;
+  protected _vertexBuffer: WebGLBuffer;
+  protected _indexBuffer: WebGLBuffer;
+  protected _trianglesSize: number;
 
   constructor() {
     this._vertexData = new Array();

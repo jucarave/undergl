@@ -15,3 +15,10 @@ export function angleVectors2D(x1: number, y1: number, x2: number, y2: number) {
 
   return Math.atan2(det, dot);
 }
+
+export function vector2DLength(x1: number, y1: number, x2: number, y2: number) {
+  const x = x2 - x1;
+  const y = y2 - y1;
+
+  return Math.sqrt(x * x + y * y);
+}

@@ -115,7 +115,7 @@ class Game {
       .addNode([15, 16])
       .addNode([13, 4]);
 
-    return new GeometrySector(dl);
+    return new GeometrySector(dl, 0.0, 3.0);
   }
 
   private renderTestScene() {

@@ -56,6 +56,16 @@ class DoubleList {
     }
   }
 
+  public clone(): DoubleList {
+    const dl = new DoubleList();
+
+    this.forEach((value: any) => {
+      dl.addNode(value);
+    });
+
+    return dl;
+  }
+
   public get root(): Node {
     return this._root;
   }

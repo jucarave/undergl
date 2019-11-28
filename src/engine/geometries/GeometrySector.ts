@@ -1,13 +1,21 @@
 import Geometry from './Geometry';
-import { angleVectors2D, radToDeg } from 'engine/math/Math';
+import { angleVectors2D, radToDeg, vector2DLength } from 'engine/math/Math';
 import DoubleList from 'engine/system/DoubleList';
 
 class GeometrySector extends Geometry {
-  constructor(vertices: DoubleList) {
+  constructor(vertices: DoubleList, y: number, height: number) {
     super();
 
+    this._addPlane(vertices.clone(), y, true);
+    this._addPlane(vertices.clone(), y + height, false);
+    this._addWalls(vertices.clone(), y, height);
+
+    this.build();
+  }
+
+  private _addPlane(vertices: DoubleList, height: number, inverted: boolean): void {
     let n = vertices.root;
-    let ind = 0;
+    let ind = this._indices.length;
 
     while (vertices.length >= 3) {
       const root = vertices.root;
@@ -26,23 +34,53 @@ class GeometrySector extends Geometry {
         continue;
       }
 
-      this.addVertex(v1[0], 0.3, v1[1])
-        .addTexCoord(0, 0)
+      this.addVertex(v1[0], height, v1[1])
+        .addTexCoord(v1[0], v1[1])
 
-        .addVertex(v2[0], 0.3, v2[1])
-        .addTexCoord(0, 0)
+        .addVertex(v2[0], height, v2[1])
+        .addTexCoord(v2[0], v2[1])
 
-        .addVertex(v3[0], 0.3, v3[1])
-        .addTexCoord(0, 0)
+        .addVertex(v3[0], height, v3[1])
+        .addTexCoord(v3[0], v3[1]);
 
-        .addTriangle(ind, ind + 1, ind + 2);
+      if (inverted) {
+        this.addTriangle(ind, ind + 2, ind + 1);
+      } else {
+        this.addTriangle(ind, ind + 1, ind + 2);
+      }
 
       vertices.remove(n2);
 
       ind += 3;
     }
+  }
 
-    this.build();
+  private _addWalls(vertices: DoubleList, y: number, height: number): void {
+    const len = vertices.length;
+    let n = vertices.root;
+    let ind = this._indices.length;
+
+    for (let i = 0; i < len; i++) {
+      const n2 = n.next ? n.next : vertices.root;
+      const tx = vector2DLength(n.value[0], n.value[1], n2.value[0], n2.value[1]);
+
+      this.addVertex(n.value[0], y, n.value[1])
+        .addTexCoord(0, height)
+
+        .addVertex(n2.value[0], y, n2.value[1])
+        .addTexCoord(tx, height)
+
+        .addVertex(n.value[0], y + height, n.value[1])
+        .addTexCoord(0, 0)
+
+        .addVertex(n2.value[0], y + height, n2.value[1])
+        .addTexCoord(tx, 0);
+
+      this.addTriangle(ind, ind + 1, ind + 2).addTriangle(ind + 1, ind + 3, ind + 2);
+
+      ind += 4;
+      n = n.next;
+    }
   }
 
   private _pointsInTriangle(vertices: DoubleList, v1: Array<number>, v2: Array<number>, v3: Array<number>): boolean {
