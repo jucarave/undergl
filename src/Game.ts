@@ -9,6 +9,8 @@ import Scene from 'engine/Scene';
 import PlayerController from 'components/PlayerController';
 import MaterialSkybox from 'engine/materials/MaterialSkybox';
 import GeometrySphere from 'engine/geometries/GeometrySphere';
+import DoubleList from 'engine/system/DoubleList';
+import GeometrySector from 'engine/geometries/GeometrySector';
 
 class Game {
   private _renderer: Renderer;
@@ -98,12 +100,32 @@ class Game {
     return geometry;
   }
 
+  private _createSector(): Geometry {
+    const dl = new DoubleList();
+
+    dl.addNode([0, 18])
+      .addNode([12, 27])
+      .addNode([22, 19])
+      .addNode([22, 37])
+      .addNode([45, 21])
+      .addNode([28, 26])
+      .addNode([43, 2])
+      .addNode([19, 0])
+      .addNode([26, 13])
+      .addNode([15, 16])
+      .addNode([13, 4]);
+
+    return new GeometrySector(dl);
+  }
+
   private renderTestScene() {
-    const cubeGeometry = this._createCube();
+    this._createCube();
+
+    const cubeGeometry = this._createSector();
     const cubeMaterial = new MaterialBasic(Texture.getTexture('textures'));
     cubeMaterial.v4UV = [0.5, 0.0, 0.5, 1.0];
     cubeMaterial.v2Repeat = [1, 1];
-    const cube = new Entity(new Vector3(0, 0.5, 0), cubeGeometry, cubeMaterial);
+    const cube = new Entity(new Vector3(0, 0.0, 0), cubeGeometry, cubeMaterial);
 
     const skyboxGeo = new GeometrySphere(900, 32, 16, true);
     const skyboxMat = new MaterialSkybox(Texture.getTexture('skybox'));
