@@ -4,17 +4,11 @@ import DoubleList from 'engine/system/DoubleList';
 import Sector from 'engine/Sector';
 
 class GeometrySector extends Geometry {
-  constructor(sector: Sector) {
+  constructor() {
     super();
-
-    this._addPlane(sector, sector.y, !sector.options.inverted);
-    this._addPlane(sector, sector.height, sector.options.inverted);
-    this._addWalls(sector);
-
-    this.build();
   }
 
-  private _addPlane(sector: Sector, height: number, inverted: boolean): void {
+  private _addPlane(sector: Sector, height: number, inverted: boolean, uvs: Array<number>): void {
     const vertices = sector.vertices;
 
     let n = vertices.root;
@@ -39,12 +33,15 @@ class GeometrySector extends Geometry {
 
       this.addVertex(v1[0], height, v1[1])
         .addTexCoord(v1[0], v1[1])
+        .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
         .addVertex(v2[0], height, v2[1])
         .addTexCoord(v2[0], v2[1])
+        .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
         .addVertex(v3[0], height, v3[1])
-        .addTexCoord(v3[0], v3[1]);
+        .addTexCoord(v3[0], v3[1])
+        .addUVs(uvs[0], uvs[1], uvs[2], uvs[3]);
 
       if (inverted) {
         this.addTriangle(ind, ind + 2, ind + 1);
@@ -73,20 +70,31 @@ class GeometrySector extends Geometry {
     let tx = 0;
 
     for (let i = 0; i < len; i++) {
+      if (n.value[2].invisible) {
+        n = n.next;
+        tx = 0;
+        continue;
+      }
+
       const n2 = n.next ? n.next : vertices.root;
       const tw = tx + vector2DLength(n.value[0], n.value[1], n2.value[0], n2.value[1]);
+      const uvs = n.value[2].uvs;
 
       this.addVertex(n.value[0], y, n.value[1])
         .addTexCoord(tx, height)
+        .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
         .addVertex(n2.value[0], y, n2.value[1])
         .addTexCoord(tw, height)
+        .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
         .addVertex(n.value[0], y + height, n.value[1])
         .addTexCoord(tx, 0)
+        .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
         .addVertex(n2.value[0], y + height, n2.value[1])
-        .addTexCoord(tw, 0);
+        .addTexCoord(tw, 0)
+        .addUVs(uvs[0], uvs[1], uvs[2], uvs[3]);
 
       if (inverted) {
         this.addTriangle(ind, ind + 2, ind + 1).addTriangle(ind + 1, ind + 2, ind + 3);
@@ -126,6 +134,12 @@ class GeometrySector extends Geometry {
     }
 
     return false;
+  }
+
+  public addSector(sector: Sector) {
+    this._addPlane(sector, sector.y, !sector.options.inverted, sector.options.floorUVs);
+    this._addPlane(sector, sector.height, sector.options.inverted, sector.options.ceilingUVs);
+    this._addWalls(sector);
   }
 }
 

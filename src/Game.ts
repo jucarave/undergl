@@ -11,6 +11,7 @@ import MaterialSkybox from 'engine/materials/MaterialSkybox';
 import GeometrySphere from 'engine/geometries/GeometrySphere';
 import GeometrySector from 'engine/geometries/GeometrySector';
 import Sector from 'engine/Sector';
+import MaterialSector from 'engine/materials/MaterialSector';
 
 class Game {
   private _renderer: Renderer;
@@ -101,31 +102,37 @@ class Game {
   }
 
   private _createSector(): Geometry {
-    const sector = new Sector(0.0, 3.0);
+    const texture = Texture.getTexture('textures');
+    const cobbleStone = texture.getUVS(38, 2, 32, 32);
+
+    const sector = new Sector(0.0, 0.4, { floorUVs: cobbleStone, ceilingUVs: cobbleStone });
 
     sector
-      .addVertice(0, 18)
-      .addVertice(12, 27)
-      .addVertice(22, 19)
-      .addVertice(22, 37)
-      .addVertice(45, 21)
-      .addVertice(28, 26)
-      .addVertice(43, 2)
-      .addVertice(19, 0)
-      .addVertice(26, 13)
-      .addVertice(15, 16)
-      .addVertice(13, 4);
+      .addVertice(0, 18, { uvs: cobbleStone })
+      .addVertice(12, 27, { uvs: cobbleStone })
+      .addVertice(22, 19, { uvs: cobbleStone })
+      .addVertice(22, 37, { uvs: cobbleStone })
+      .addVertice(45, 21, { uvs: cobbleStone })
+      .addVertice(28, 26, { uvs: cobbleStone })
+      .addVertice(43, 2, { uvs: cobbleStone })
+      .addVertice(19, 0, { uvs: cobbleStone })
+      .addVertice(26, 13, { uvs: cobbleStone })
+      .addVertice(15, 16, { uvs: cobbleStone })
+      .addVertice(13, 4, { uvs: cobbleStone });
 
-    return new GeometrySector(sector);
+    const geo = new GeometrySector();
+
+    geo.addSector(sector);
+    geo.build();
+
+    return geo;
   }
 
   private renderTestScene() {
     this._createCube();
 
     const cubeGeometry = this._createSector();
-    const cubeMaterial = new MaterialBasic(Texture.getTexture('textures'));
-    cubeMaterial.v4UV = Texture.getTexture('textures').getUVS(38, 2, 32, 32);
-    cubeMaterial.v2Repeat = [1, 1];
+    const cubeMaterial = new MaterialSector(Texture.getTexture('textures'));
     const cube = new Entity(new Vector3(0, 0.0, 0), cubeGeometry, cubeMaterial);
 
     const skyboxGeo = new GeometrySphere(900, 32, 16, true);

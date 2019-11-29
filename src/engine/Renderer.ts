@@ -3,12 +3,14 @@ import basicShader from './shaders/glsl/basicShader';
 import Texture from './Texture';
 import Input from './system/Input';
 import skyboxShader from './shaders/glsl/skyboxShader';
+import sectorShader from './shaders/glsl/sectorShader';
 
 class Renderer {
   private _canvas: HTMLCanvasElement;
   private _gl: WebGLRenderingContext;
   private _basicShader: Shader;
   private _skyboxShader: Shader;
+  private _sectorShader: Shader;
   private _shader: Shader;
   private _lastTexture: string;
 
@@ -58,6 +60,8 @@ class Renderer {
 
     this._skyboxShader = new Shader('skyboxS', skyboxShader);
 
+    this._sectorShader = new Shader('sectorS', sectorShader);
+
     this._shader = this._basicShader;
   }
 
@@ -93,6 +97,10 @@ class Renderer {
 
   public get skyboxShader(): Shader {
     return this._skyboxShader;
+  }
+
+  public get sectorShader(): Shader {
+    return this._sectorShader;
   }
 }
 

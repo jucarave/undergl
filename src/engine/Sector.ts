@@ -2,6 +2,13 @@ import DoubleList from './system/DoubleList';
 
 interface SectorOptions {
   inverted?: boolean;
+  floorUVs?: Array<number>;
+  ceilingUVs?: Array<number>;
+}
+
+interface VerticeOptions {
+  invisible?: boolean;
+  uvs?: Array<number>;
 }
 
 class Sector {
@@ -24,13 +31,26 @@ class Sector {
       this._options = {};
     }
 
-    if (this._options.inverted === undefined) {
-      this._options.inverted = false;
-    }
+    this._options.inverted = this._options.inverted !== undefined ? this._options.inverted : false;
+    this._options.floorUVs = this._options.floorUVs !== undefined ? this._options.floorUVs : [0, 0, 1, 1];
+    this._options.ceilingUVs = this._options.ceilingUVs !== undefined ? this._options.ceilingUVs : [0, 0, 1, 1];
   }
 
-  public addVertice(x: number, y: number): Sector {
-    this._vertices.addNode([x, y]);
+  private _mergeVerticesOptions(options?: VerticeOptions): VerticeOptions {
+    if (!options) {
+      options = {};
+    }
+
+    options.invisible = options.invisible !== undefined ? options.invisible : false;
+    options.uvs = options.uvs !== undefined ? options.uvs : [0, 0, 1, 1];
+
+    return options;
+  }
+
+  public addVertice(x: number, y: number, options?: VerticeOptions): Sector {
+    options = this._mergeVerticesOptions(options);
+
+    this._vertices.addNode([x, y, options]);
 
     return this;
   }
