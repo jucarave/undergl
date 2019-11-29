@@ -1,19 +1,22 @@
 import Geometry from './Geometry';
 import { angleVectors2D, radToDeg, vector2DLength } from 'engine/math/Math';
 import DoubleList from 'engine/system/DoubleList';
+import Sector from 'engine/Sector';
 
 class GeometrySector extends Geometry {
-  constructor(vertices: DoubleList, y: number, height: number, invert: boolean) {
+  constructor(sector: Sector) {
     super();
 
-    this._addPlane(vertices.clone(), y, !invert);
-    this._addPlane(vertices.clone(), y + height, invert);
-    this._addWalls(vertices.clone(), y, height, invert);
+    this._addPlane(sector, sector.y, !sector.options.inverted);
+    this._addPlane(sector, sector.height, sector.options.inverted);
+    this._addWalls(sector);
 
     this.build();
   }
 
-  private _addPlane(vertices: DoubleList, height: number, inverted: boolean): void {
+  private _addPlane(sector: Sector, height: number, inverted: boolean): void {
+    const vertices = sector.vertices;
+
     let n = vertices.root;
     let ind = this._indices.length;
 
@@ -53,9 +56,16 @@ class GeometrySector extends Geometry {
 
       ind += 3;
     }
+
+    vertices.destroy();
   }
 
-  private _addWalls(vertices: DoubleList, y: number, height: number, invert: boolean): void {
+  private _addWalls(sector: Sector): void {
+    const vertices = sector.vertices;
+    const inverted = sector.options.inverted;
+    const y = sector.y;
+    const height = sector.height;
+
     const len = vertices.length;
     let n = vertices.root;
     let ind = this._indices.length;
@@ -78,7 +88,7 @@ class GeometrySector extends Geometry {
         .addVertex(n2.value[0], y + height, n2.value[1])
         .addTexCoord(tw, 0);
 
-      if (invert) {
+      if (inverted) {
         this.addTriangle(ind, ind + 2, ind + 1).addTriangle(ind + 1, ind + 2, ind + 3);
       } else {
         this.addTriangle(ind, ind + 1, ind + 2).addTriangle(ind + 1, ind + 3, ind + 2);
@@ -88,6 +98,8 @@ class GeometrySector extends Geometry {
       tx = tw;
       n = n.next;
     }
+
+    vertices.destroy();
   }
 
   private _pointsInTriangle(vertices: DoubleList, v1: Array<number>, v2: Array<number>, v3: Array<number>): boolean {

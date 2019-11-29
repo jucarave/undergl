@@ -66,6 +66,14 @@ class DoubleList {
     return dl;
   }
 
+  public destroy(): void {
+    while (this.root) {
+      this.remove(this.root);
+    }
+
+    this._root = null;
+  }
+
   public get root(): Node {
     return this._root;
   }

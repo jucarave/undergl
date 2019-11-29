@@ -9,8 +9,8 @@ import Scene from 'engine/Scene';
 import PlayerController from 'components/PlayerController';
 import MaterialSkybox from 'engine/materials/MaterialSkybox';
 import GeometrySphere from 'engine/geometries/GeometrySphere';
-import DoubleList from 'engine/system/DoubleList';
 import GeometrySector from 'engine/geometries/GeometrySector';
+import Sector from 'engine/Sector';
 
 class Game {
   private _renderer: Renderer;
@@ -101,21 +101,22 @@ class Game {
   }
 
   private _createSector(): Geometry {
-    const dl = new DoubleList();
+    const sector = new Sector(0.0, 3.0);
 
-    dl.addNode([0, 18])
-      .addNode([12, 27])
-      .addNode([22, 19])
-      .addNode([22, 37])
-      .addNode([45, 21])
-      .addNode([28, 26])
-      .addNode([43, 2])
-      .addNode([19, 0])
-      .addNode([26, 13])
-      .addNode([15, 16])
-      .addNode([13, 4]);
+    sector
+      .addVertice(0, 18)
+      .addVertice(12, 27)
+      .addVertice(22, 19)
+      .addVertice(22, 37)
+      .addVertice(45, 21)
+      .addVertice(28, 26)
+      .addVertice(43, 2)
+      .addVertice(19, 0)
+      .addVertice(26, 13)
+      .addVertice(15, 16)
+      .addVertice(13, 4);
 
-    return new GeometrySector(dl, 0.0, 3.0, false);
+    return new GeometrySector(sector);
   }
 
   private renderTestScene() {
