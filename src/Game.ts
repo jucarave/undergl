@@ -10,7 +10,7 @@ import PlayerController from 'components/PlayerController';
 import MaterialSkybox from 'engine/materials/MaterialSkybox';
 import GeometrySphere from 'engine/geometries/GeometrySphere';
 import GeometrySector from 'engine/geometries/GeometrySector';
-import Sector from 'engine/Sector';
+import Sector, { SlopeDirection } from 'engine/Sector';
 import MaterialSector from 'engine/materials/MaterialSector';
 
 class Game {
@@ -105,9 +105,47 @@ class Game {
     const texture = Texture.getTexture('textures');
     const cobbleStone = texture.getUVS(38, 2, 32, 32);
 
-    const sector = new Sector(0.0, 0.4, { floorUVs: cobbleStone, ceilingUVs: cobbleStone });
+    const sector = new Sector(0.0, 3.0, {
+      floorUVs: cobbleStone,
+      ceilingUVs: cobbleStone,
+      topSlope: 0.0,
+      bottomSlope: 0.0,
+      slopeDir: SlopeDirection.WEST
+    });
 
-    sector
+    const sector2 = new Sector(3.0, 0.0, {
+      floorUVs: cobbleStone,
+      ceilingUVs: cobbleStone,
+      topSlope: 2.0,
+      bottomSlope: 0.0,
+      slopeDir: SlopeDirection.EAST
+    });
+
+    const sector3 = new Sector(3.0, 0.0, {
+      floorUVs: cobbleStone,
+      ceilingUVs: cobbleStone,
+      topSlope: 2.0,
+      bottomSlope: 0.0,
+      slopeDir: SlopeDirection.WEST
+    });
+
+    const sector4 = new Sector(2.3, 0.7, {
+      floorUVs: cobbleStone,
+      ceilingUVs: cobbleStone,
+      topSlope: 0.0,
+      bottomSlope: 0.0,
+      slopeDir: SlopeDirection.WEST
+    });
+
+    const sector5 = new Sector(3.0, 2.5, {
+      floorUVs: cobbleStone,
+      ceilingUVs: cobbleStone,
+      topSlope: 0.0,
+      bottomSlope: 0.0,
+      slopeDir: SlopeDirection.WEST
+    });
+
+    /*sector
       .addVertice(0, 18, { uvs: cobbleStone })
       .addVertice(12, 27, { uvs: cobbleStone })
       .addVertice(22, 19, { uvs: cobbleStone })
@@ -118,11 +156,53 @@ class Game {
       .addVertice(19, 0, { uvs: cobbleStone })
       .addVertice(26, 13, { uvs: cobbleStone })
       .addVertice(15, 16, { uvs: cobbleStone })
-      .addVertice(13, 4, { uvs: cobbleStone });
+      .addVertice(13, 4, { uvs: cobbleStone });*/
+
+    sector
+      .addVertice(0, 0, { uvs: cobbleStone })
+      .addVertice(0, 10, { uvs: cobbleStone })
+      .addVertice(4.2, 10, { uvs: cobbleStone })
+      .addVertice(4.2, 9.85, { uvs: cobbleStone })
+      .addVertice(0.15, 9.85, { uvs: cobbleStone })
+      .addVertice(0.15, 0.15, { uvs: cobbleStone })
+      .addVertice(9.85, 0.15, { uvs: cobbleStone })
+      .addVertice(9.85, 9.85, { uvs: cobbleStone })
+      .addVertice(5.8, 9.85, { uvs: cobbleStone })
+      .addVertice(5.8, 10, { uvs: cobbleStone })
+      .addVertice(10, 10, { uvs: cobbleStone })
+      .addVertice(10, 0, { uvs: cobbleStone });
+
+    sector2
+      .addVertice(0, 0, { uvs: cobbleStone })
+      .addVertice(0, 10, { uvs: cobbleStone })
+      .addVertice(5, 10, { uvs: cobbleStone })
+      .addVertice(5, 0, { uvs: cobbleStone });
+
+    sector3
+      .addVertice(5, 0, { uvs: cobbleStone })
+      .addVertice(5, 10, { uvs: cobbleStone })
+      .addVertice(10, 10, { uvs: cobbleStone })
+      .addVertice(10, 0, { uvs: cobbleStone });
+
+    sector4
+      .addVertice(4.2, 9.85, { uvs: cobbleStone })
+      .addVertice(4.2, 10, { uvs: cobbleStone })
+      .addVertice(5.8, 10, { uvs: cobbleStone })
+      .addVertice(5.8, 9.85, { uvs: cobbleStone });
+
+    sector5
+      .addVertice(2, 2, { uvs: cobbleStone })
+      .addVertice(2, 3, { uvs: cobbleStone })
+      .addVertice(3, 3, { uvs: cobbleStone })
+      .addVertice(3, 2, { uvs: cobbleStone });
 
     const geo = new GeometrySector();
 
     geo.addSector(sector);
+    geo.addSector(sector2);
+    geo.addSector(sector3);
+    geo.addSector(sector4);
+    geo.addSector(sector5);
     geo.build();
 
     return geo;
@@ -147,7 +227,7 @@ class Game {
 
     const camera = Camera.createPerspective(60, 854 / 480, 0.1, 1000.0);
 
-    const player = new Entity(new Vector3(-3, 0, 3));
+    const player = new Entity(new Vector3(0, 0, 15));
     player.addComponent(new PlayerController(camera));
 
     const scene = new Scene();

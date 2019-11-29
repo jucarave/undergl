@@ -8,11 +8,11 @@ class GeometrySector extends Geometry {
     super();
   }
 
-  private _addPlane(sector: Sector, height: number, inverted: boolean, uvs: Array<number>): void {
+  private _addPlane(sector: Sector, heightFunc: Function, inverted: boolean, uvs: Array<number>): void {
     const vertices = sector.vertices;
 
     let n = vertices.root;
-    let ind = this._indices.length;
+    let ind = this._vertexData.length / 9;
 
     while (vertices.length >= 3) {
       const root = vertices.root;
@@ -31,15 +31,15 @@ class GeometrySector extends Geometry {
         continue;
       }
 
-      this.addVertex(v1[0], height, v1[1])
+      this.addVertex(v1[0], heightFunc(v1[0], v1[1]), v1[1])
         .addTexCoord(v1[0], v1[1])
         .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
-        .addVertex(v2[0], height, v2[1])
+        .addVertex(v2[0], heightFunc(v2[0], v2[1]), v2[1])
         .addTexCoord(v2[0], v2[1])
         .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
-        .addVertex(v3[0], height, v3[1])
+        .addVertex(v3[0], heightFunc(v3[0], v3[1]), v3[1])
         .addTexCoord(v3[0], v3[1])
         .addUVs(uvs[0], uvs[1], uvs[2], uvs[3]);
 
@@ -60,12 +60,10 @@ class GeometrySector extends Geometry {
   private _addWalls(sector: Sector): void {
     const vertices = sector.vertices;
     const inverted = sector.options.inverted;
-    const y = sector.y;
-    const height = sector.height;
 
     const len = vertices.length;
     let n = vertices.root;
-    let ind = this._indices.length;
+    let ind = this._vertexData.length / 9;
 
     let tx = 0;
 
@@ -80,20 +78,25 @@ class GeometrySector extends Geometry {
       const tw = tx + vector2DLength(n.value[0], n.value[1], n2.value[0], n2.value[1]);
       const uvs = n.value[2].uvs;
 
-      this.addVertex(n.value[0], y, n.value[1])
-        .addTexCoord(tx, height)
+      const y1 = sector.getBottomY(n.value[0], n.value[1]);
+      const y2 = sector.getBottomY(n2.value[0], n2.value[1]);
+      const h1 = sector.getTopY(n.value[0], n.value[1]);
+      const h2 = sector.getTopY(n2.value[0], n2.value[1]);
+
+      this.addVertex(n.value[0], y1, n.value[1])
+        .addTexCoord(tx, y1)
         .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
-        .addVertex(n2.value[0], y, n2.value[1])
-        .addTexCoord(tw, height)
+        .addVertex(n2.value[0], y2, n2.value[1])
+        .addTexCoord(tw, y2)
         .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
-        .addVertex(n.value[0], y + height, n.value[1])
-        .addTexCoord(tx, 0)
+        .addVertex(n.value[0], h1, n.value[1])
+        .addTexCoord(tx, h1)
         .addUVs(uvs[0], uvs[1], uvs[2], uvs[3])
 
-        .addVertex(n2.value[0], y + height, n2.value[1])
-        .addTexCoord(tw, 0)
+        .addVertex(n2.value[0], h2, n2.value[1])
+        .addTexCoord(tw, h2)
         .addUVs(uvs[0], uvs[1], uvs[2], uvs[3]);
 
       if (inverted) {
@@ -137,8 +140,8 @@ class GeometrySector extends Geometry {
   }
 
   public addSector(sector: Sector) {
-    this._addPlane(sector, sector.y, !sector.options.inverted, sector.options.floorUVs);
-    this._addPlane(sector, sector.height, sector.options.inverted, sector.options.ceilingUVs);
+    this._addPlane(sector, sector.getBottomY.bind(sector), !sector.options.inverted, sector.options.floorUVs);
+    this._addPlane(sector, sector.getTopY.bind(sector), sector.options.inverted, sector.options.ceilingUVs);
     this._addWalls(sector);
   }
 }
