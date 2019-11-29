@@ -115,7 +115,7 @@ class Game {
       .addNode([15, 16])
       .addNode([13, 4]);
 
-    return new GeometrySector(dl, 0.0, 3.0);
+    return new GeometrySector(dl, 0.0, 3.0, false);
   }
 
   private renderTestScene() {
@@ -123,24 +123,23 @@ class Game {
 
     const cubeGeometry = this._createSector();
     const cubeMaterial = new MaterialBasic(Texture.getTexture('textures'));
-    cubeMaterial.v4UV = [0.5, 0.0, 0.5, 1.0];
+    cubeMaterial.v4UV = Texture.getTexture('textures').getUVS(38, 2, 32, 32);
     cubeMaterial.v2Repeat = [1, 1];
     const cube = new Entity(new Vector3(0, 0.0, 0), cubeGeometry, cubeMaterial);
 
     const skyboxGeo = new GeometrySphere(900, 32, 16, true);
     const skyboxMat = new MaterialSkybox(Texture.getTexture('skybox'));
-    const skybox = new Entity(new Vector3(0, 2, 0), skyboxGeo, skyboxMat);
+    const skybox = new Entity(new Vector3(2, 2, 0), skyboxGeo, skyboxMat);
 
     const floorGeometry = this._createFloor();
     const floorMaterial = new MaterialBasic(Texture.getTexture('textures'));
-    floorMaterial.v4UV = [0.0, 0.0, 0.5, 1.0];
+    floorMaterial.v4UV = Texture.getTexture('textures').getUVS(1, 1, 32, 32);
     floorMaterial.v2Repeat = [1000, 1000];
     const floor = new Entity(Vector3.zero, floorGeometry, floorMaterial);
 
     const camera = Camera.createPerspective(60, 854 / 480, 0.1, 1000.0);
 
     const player = new Entity(new Vector3(-3, 0, 3));
-    player.rotation.y = 45;
     player.addComponent(new PlayerController(camera));
 
     const scene = new Scene();

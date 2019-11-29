@@ -3,12 +3,12 @@ import { angleVectors2D, radToDeg, vector2DLength } from 'engine/math/Math';
 import DoubleList from 'engine/system/DoubleList';
 
 class GeometrySector extends Geometry {
-  constructor(vertices: DoubleList, y: number, height: number) {
+  constructor(vertices: DoubleList, y: number, height: number, invert: boolean) {
     super();
 
-    this._addPlane(vertices.clone(), y, true);
-    this._addPlane(vertices.clone(), y + height, false);
-    this._addWalls(vertices.clone(), y, height);
+    this._addPlane(vertices.clone(), y, !invert);
+    this._addPlane(vertices.clone(), y + height, invert);
+    this._addWalls(vertices.clone(), y, height, invert);
 
     this.build();
   }
@@ -55,30 +55,37 @@ class GeometrySector extends Geometry {
     }
   }
 
-  private _addWalls(vertices: DoubleList, y: number, height: number): void {
+  private _addWalls(vertices: DoubleList, y: number, height: number, invert: boolean): void {
     const len = vertices.length;
     let n = vertices.root;
     let ind = this._indices.length;
 
+    let tx = 0;
+
     for (let i = 0; i < len; i++) {
       const n2 = n.next ? n.next : vertices.root;
-      const tx = vector2DLength(n.value[0], n.value[1], n2.value[0], n2.value[1]);
+      const tw = tx + vector2DLength(n.value[0], n.value[1], n2.value[0], n2.value[1]);
 
       this.addVertex(n.value[0], y, n.value[1])
-        .addTexCoord(0, height)
-
-        .addVertex(n2.value[0], y, n2.value[1])
         .addTexCoord(tx, height)
 
+        .addVertex(n2.value[0], y, n2.value[1])
+        .addTexCoord(tw, height)
+
         .addVertex(n.value[0], y + height, n.value[1])
-        .addTexCoord(0, 0)
+        .addTexCoord(tx, 0)
 
         .addVertex(n2.value[0], y + height, n2.value[1])
-        .addTexCoord(tx, 0);
+        .addTexCoord(tw, 0);
 
-      this.addTriangle(ind, ind + 1, ind + 2).addTriangle(ind + 1, ind + 3, ind + 2);
+      if (invert) {
+        this.addTriangle(ind, ind + 2, ind + 1).addTriangle(ind + 1, ind + 2, ind + 3);
+      } else {
+        this.addTriangle(ind, ind + 1, ind + 2).addTriangle(ind + 1, ind + 3, ind + 2);
+      }
 
       ind += 4;
+      tx = tw;
       n = n.next;
     }
   }

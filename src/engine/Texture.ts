@@ -51,6 +51,12 @@ class Texture {
     gl.bindTexture(gl.TEXTURE_2D, null);
   }
 
+  public getUVS(x: number, y: number, w: number, h: number): Array<number> {
+    const i = this._img;
+
+    return [x / i.width, y / i.height, w / i.width, h / i.height];
+  }
+
   public get texture(): WebGLTexture {
     return this._texture;
   }
