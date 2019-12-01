@@ -1,5 +1,6 @@
 import DoubleList from './system/DoubleList';
 import Vector3 from './math/Vector3';
+import { vector2DDot, vector2DLength } from './math/Math';
 
 export enum SlopeDirection {
   NORTH,
@@ -77,14 +78,101 @@ class Sector {
     return this;
   }
 
-  public insideBoundingBox(x: number, y: number): boolean {
+  public isPointInsideBoundingBox(x: number, y: number): boolean {
     const bb = this._boundingBox;
 
     return !(x < bb[0] || x > bb[2] || y < bb[1] || y > bb[3]);
   }
 
+  private _isPointRightToLine(px: number, py: number, x1: number, y1: number, x2: number, y2: number): boolean {
+    if (py < Math.min(y1, y2) || py >= Math.max(y1, y2) || px < Math.min(x1, x2)) {
+      return false;
+    }
+
+    if (px >= Math.max(x1, x2)) {
+      return true;
+    }
+
+    const dx = x2 - x1;
+    const dy = Math.abs(y2 - y1);
+    const f = Math.abs(py - y1) / dy;
+    const dpx = x1 + dx * f;
+
+    return px > dpx;
+  }
+
+  private _getCircleCollidingWithLinePoint(px: number, py: number, r: number, x1: number, y1: number, x2: number, y2: number): Array<number> {
+    if (py + r < Math.min(y1, y2) || py - r >= Math.max(y1, y2) || px + r < Math.min(x1, x2) || px - r >= Math.max(x1, x2)) {
+      return null;
+    }
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const vpx = px - x1;
+    const vpy = py - y1;
+
+    const l = vector2DDot(dx, dy, dx, dy);
+    const f = vector2DDot(dx, dy, vpx, vpy) / l;
+
+    const wpx = x1 + dx * f;
+    const wpy = y1 + dy * f;
+
+    if (vector2DLength(wpx, wpy, px, py) <= r) {
+      return [wpx, wpy];
+    }
+  }
+
+  public isPointInSector(x: number, y: number): boolean {
+    if (!this.isPointInsideBoundingBox(x, y)) {
+      return false;
+    }
+
+    const length = this._vertices.length;
+
+    let count = 0;
+    let n = this._vertices.root;
+
+    // Point in polygon routine
+    for (let i = 0; i < length; i++) {
+      const n2 = n.next ? n.next : this._vertices.root;
+
+      if (this._isPointRightToLine(x, y, n.value[0], n.value[1], n2.value[0], n2.value[1])) {
+        count += 1;
+      }
+
+      n = n.next;
+    }
+
+    return count % 2 == 1;
+  }
+
+  public getCircleInSectorY(x: number, y: number): number {
+    // Circle vs walls routine
+    const length = this._vertices.length;
+
+    let n = this._vertices.root;
+    let maxY: number = null;
+
+    for (let i = 0; i < length; i++) {
+      const n2 = n.next ? n.next : this._vertices.root;
+      const col = this._getCircleCollidingWithLinePoint(x, y, 0.4, n.value[0], n.value[1], n2.value[0], n2.value[1]);
+
+      if (col != null) {
+        const yTop = this.getTopY(col[0], col[1]);
+
+        if (maxY === null || yTop > maxY) {
+          maxY = yTop;
+        }
+      }
+
+      n = n.next;
+    }
+
+    return maxY;
+  }
+
   public getHeightFraction(x: number, y: number): number {
-    if (!this.insideBoundingBox(x, y)) {
+    if (!this.isPointInsideBoundingBox(x, y)) {
       return 0.0;
     }
 
@@ -119,12 +207,7 @@ class Sector {
   }
 
   public getMaxTopY(x: number, y: number, r: number): number {
-    return Math.max(
-      this.getTopY(x - r, y - r),
-      this.getTopY(x + r, y - r),
-      this.getTopY(x - r, y + r),
-      this.getTopY(x + r, y + r)
-    );
+    return Math.max(this.getTopY(x - r, y - r), this.getTopY(x + r, y - r), this.getTopY(x - r, y + r), this.getTopY(x + r, y + r));
   }
 
   public getBottomY(x: number, y: number): number {

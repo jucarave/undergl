@@ -17,11 +17,16 @@ class SolidGround {
     let maxY = 0;
 
     this._sectors.forEach((sector: Sector) => {
-      if (!sector.insideBoundingBox(x, z)) {
-        return;
+      let topY = 0;
+      if (sector.isPointInSector(x, z)) {
+        topY = sector.getTopY(x, z);
+      } else {
+        topY = sector.getCircleInSectorY(x, z);
+        if (topY === null) {
+          return;
+        }
       }
 
-      const topY = sector.getTopY(x, z);
       if (topY - CONFIG.MAX_SLOPE <= y) {
         maxY = Math.max(topY, maxY);
       }
