@@ -23,6 +23,16 @@ class Vector3 {
     return this;
   }
 
+  public normalize(): Vector3 {
+    const l = this.length;
+
+    this._x /= l;
+    this._y /= l;
+    this._z /= l;
+
+    return this;
+  }
+
   public get x(): number {
     return this._x;
   }
@@ -51,6 +61,10 @@ class Vector3 {
     this._z = z;
 
     this.onChange.dispatch();
+  }
+
+  public get length(): number {
+    return Math.sqrt(this._x * this._x + this._y * this._y + this._z * this._z);
   }
 
   public static get zero(): Vector3 {

@@ -43,6 +43,18 @@ class Entity {
     }
   }
 
+  public getComponent<T extends Component>(component: string): T {
+    const len = this._components.length;
+
+    for (let i = 0; i < len; i++) {
+      if (this._components[i].componentName === component) {
+        return <T>this._components[i];
+      }
+    }
+
+    return null;
+  }
+
   public init(): void {
     const len = this._components.length;
     for (let i = 0; i < len; i++) {

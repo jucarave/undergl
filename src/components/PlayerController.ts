@@ -5,6 +5,7 @@ import { degToRad } from 'engine/math/Math';
 import Vector3 from 'engine/math/Vector3';
 import Time from 'engine/system/Time';
 import CONFIG from 'Config';
+import MovingEntity from './MovingEntity';
 
 type KEYS = 'NONE' | 'LEFT' | 'UP' | 'RIGHT' | 'DOWN';
 
@@ -12,12 +13,15 @@ class PlayerController extends Component {
   private _camera: Camera;
   private _mouse: Vector3;
   private _speed: number;
+  private _movingEntity: MovingEntity;
   private _keys = {
     UP: 0,
     RIGHT: 0,
     DOWN: 0,
     LEFT: 0
   };
+
+  public readonly componentName: string = 'PlayerController';
 
   constructor(camera: Camera) {
     super();
@@ -31,6 +35,8 @@ class PlayerController extends Component {
     Input.onKeyDown.add(this._onKeyDown, this);
     Input.onKeyUp.add(this._onKeyUp, this);
     Input.onMouseMove.add(this._onMouseMove, this);
+
+    this._movingEntity = this._entity.getComponent<MovingEntity>('MovingEntity');
   }
 
   public destroy(): void {
@@ -89,8 +95,10 @@ class PlayerController extends Component {
       const ang = Math.atan2(v, h) - Math.PI / 2 + degToRad(this._entity.rotation.y);
       const speed = this._speed * Time.deltaTime;
 
-      this._entity.position.x += Math.cos(ang) * speed;
-      this._entity.position.z -= Math.sin(ang) * speed;
+      const xTo = Math.cos(ang) * speed;
+      const zTo = -Math.sin(ang) * speed;
+
+      this._movingEntity.moveTo(xTo, zTo, 1);
     }
   }
 

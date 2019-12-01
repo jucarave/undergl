@@ -22,3 +22,13 @@ export function vector2DLength(x1: number, y1: number, x2: number, y2: number) {
 
   return Math.sqrt(x * x + y * y);
 }
+
+export function vector2DNormalized(x: number, y: number): Array<number> {
+  const l = vector2DLength(0, 0, x, y);
+
+  return [x / l, y / l];
+}
+
+export function vector2DDot(x1: number, y1: number, x2: number, y2: number): number {
+  return x1 * x2 + y1 * y2;
+}

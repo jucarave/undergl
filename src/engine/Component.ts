@@ -3,6 +3,8 @@ import Entity from './Entity';
 abstract class Component {
   protected _entity: Entity;
 
+  public readonly componentName: string;
+
   init(): void {}
   destroy(): void {}
   update(): void {}

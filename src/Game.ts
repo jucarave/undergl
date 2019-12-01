@@ -12,6 +12,8 @@ import GeometrySphere from 'engine/geometries/GeometrySphere';
 import GeometrySector from 'engine/geometries/GeometrySector';
 import Sector, { SlopeDirection } from 'engine/Sector';
 import MaterialSector from 'engine/materials/MaterialSector';
+import SolidWalls from 'engine/collisions/SolidWalls';
+import MovingEntity from 'components/MovingEntity';
 
 class Game {
   private _renderer: Renderer;
@@ -145,18 +147,13 @@ class Game {
       slopeDir: SlopeDirection.WEST
     });
 
-    /*sector
-      .addVertice(0, 18, { uvs: cobbleStone })
-      .addVertice(12, 27, { uvs: cobbleStone })
-      .addVertice(22, 19, { uvs: cobbleStone })
-      .addVertice(22, 37, { uvs: cobbleStone })
-      .addVertice(45, 21, { uvs: cobbleStone })
-      .addVertice(28, 26, { uvs: cobbleStone })
-      .addVertice(43, 2, { uvs: cobbleStone })
-      .addVertice(19, 0, { uvs: cobbleStone })
-      .addVertice(26, 13, { uvs: cobbleStone })
-      .addVertice(15, 16, { uvs: cobbleStone })
-      .addVertice(13, 4, { uvs: cobbleStone });*/
+    const sector6 = new Sector(0.0, 0.0, {
+      floorUVs: cobbleStone,
+      ceilingUVs: cobbleStone,
+      topSlope: 2.0,
+      bottomSlope: 0.0,
+      slopeDir: SlopeDirection.EAST
+    });
 
     sector
       .addVertice(0, 0, { uvs: cobbleStone })
@@ -171,6 +168,8 @@ class Game {
       .addVertice(5.8, 10, { uvs: cobbleStone })
       .addVertice(10, 10, { uvs: cobbleStone })
       .addVertice(10, 0, { uvs: cobbleStone });
+
+    SolidWalls.addSector(sector);
 
     sector2
       .addVertice(0, 0, { uvs: cobbleStone })
@@ -196,6 +195,18 @@ class Game {
       .addVertice(3, 3, { uvs: cobbleStone })
       .addVertice(3, 2, { uvs: cobbleStone });
 
+    sector6
+      .addVertice(0, 2 + 15, { uvs: cobbleStone })
+      .addVertice(0, 4 + 15, { uvs: cobbleStone })
+      .addVertice(2, 6 + 15, { uvs: cobbleStone })
+      .addVertice(4, 6 + 15, { uvs: cobbleStone })
+      .addVertice(6, 4 + 15, { uvs: cobbleStone })
+      .addVertice(6, 2 + 15, { uvs: cobbleStone })
+      .addVertice(4, 0 + 15, { uvs: cobbleStone })
+      .addVertice(2, 0 + 15, { uvs: cobbleStone });
+
+    SolidWalls.addSector(sector6);
+
     const geo = new GeometrySector();
 
     geo.addSector(sector);
@@ -203,6 +214,7 @@ class Game {
     geo.addSector(sector3);
     geo.addSector(sector4);
     geo.addSector(sector5);
+    geo.addSector(sector6);
     geo.build();
 
     return geo;
@@ -225,10 +237,12 @@ class Game {
     floorMaterial.v2Repeat = [1000, 1000];
     const floor = new Entity(Vector3.zero, floorGeometry, floorMaterial);
 
-    const camera = Camera.createPerspective(60, 854 / 480, 0.1, 1000.0);
+    const camera = Camera.createPerspective(90, 854 / 480, 0.1, 1000.0);
 
-    const player = new Entity(new Vector3(0, 0, 15));
+    const player = new Entity(new Vector3(-3, 0, 15));
+    player.rotation.y = 45;
     player.addComponent(new PlayerController(camera));
+    player.addComponent(new MovingEntity());
 
     const scene = new Scene();
     scene.addEntity(cube);

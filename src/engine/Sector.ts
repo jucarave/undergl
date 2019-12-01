@@ -1,4 +1,5 @@
 import DoubleList from './system/DoubleList';
+import Vector3 from './math/Vector3';
 
 export enum SlopeDirection {
   NORTH,
@@ -19,6 +20,7 @@ interface SectorOptions {
 interface VerticeOptions {
   invisible?: boolean;
   uvs?: Array<number>;
+  normal?: Vector3;
 }
 
 class Sector {
@@ -114,6 +116,15 @@ class Sector {
     }
 
     return this._y + this._height + this._options.topSlope * this.getHeightFraction(x, y);
+  }
+
+  public getMaxTopY(x: number, y: number, r: number): number {
+    return Math.max(
+      this.getTopY(x - r, y - r),
+      this.getTopY(x + r, y - r),
+      this.getTopY(x - r, y + r),
+      this.getTopY(x + r, y + r)
+    );
   }
 
   public getBottomY(x: number, y: number): number {
