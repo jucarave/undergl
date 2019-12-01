@@ -6,19 +6,22 @@ import Vector3 from 'engine/math/Vector3';
 import Time from 'engine/system/Time';
 import CONFIG from 'Config';
 import MovingEntity from './MovingEntity';
+import GravityController from './GravityController';
 
-type KEYS = 'NONE' | 'LEFT' | 'UP' | 'RIGHT' | 'DOWN';
+type KEYS = 'NONE' | 'LEFT' | 'UP' | 'RIGHT' | 'DOWN' | 'JUMP';
 
 class PlayerController extends Component {
   private _camera: Camera;
   private _mouse: Vector3;
   private _speed: number;
   private _movingEntity: MovingEntity;
+  private _gravityController: GravityController;
   private _keys = {
     UP: 0,
     RIGHT: 0,
     DOWN: 0,
-    LEFT: 0
+    LEFT: 0,
+    JUMP: 0
   };
 
   public readonly componentName: string = 'PlayerController';
@@ -37,6 +40,7 @@ class PlayerController extends Component {
     Input.onMouseMove.add(this._onMouseMove, this);
 
     this._movingEntity = this._entity.getComponent<MovingEntity>('MovingEntity');
+    this._gravityController = this._entity.getComponent<GravityController>('GravityController');
   }
 
   public destroy(): void {
@@ -55,6 +59,8 @@ class PlayerController extends Component {
       key = 'RIGHT';
     } else if (keyCode === 83) {
       key = 'DOWN';
+    } else if (keyCode === 32) {
+      key = 'JUMP';
     }
 
     return key;
@@ -116,9 +122,17 @@ class PlayerController extends Component {
     this._mouse.y = 0;
   }
 
+  private _updateJumping() {
+    if (this._keys.JUMP === 1) {
+      this._gravityController.jump();
+      this._keys.JUMP = 2;
+    }
+  }
+
   public update() {
     this._updateMovement();
     this._updateRotation();
+    this._updateJumping();
 
     const p = this._entity.position;
     const r = this._entity.rotation;

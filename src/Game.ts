@@ -14,6 +14,8 @@ import Sector, { SlopeDirection } from 'engine/Sector';
 import MaterialSector from 'engine/materials/MaterialSector';
 import SolidWalls from 'engine/collisions/SolidWalls';
 import MovingEntity from 'components/MovingEntity';
+import GravityController from 'components/GravityController';
+import SolidGround from 'engine/collisions/SolidGround';
 
 class Game {
   private _renderer: Renderer;
@@ -169,8 +171,6 @@ class Game {
       .addVertice(10, 10, { uvs: cobbleStone })
       .addVertice(10, 0, { uvs: cobbleStone });
 
-    SolidWalls.addSector(sector);
-
     sector2
       .addVertice(0, 0, { uvs: cobbleStone })
       .addVertice(0, 10, { uvs: cobbleStone })
@@ -205,7 +205,17 @@ class Game {
       .addVertice(4, 0 + 15, { uvs: cobbleStone })
       .addVertice(2, 0 + 15, { uvs: cobbleStone });
 
+    SolidWalls.addSector(sector);
+    SolidWalls.addSector(sector2);
+    SolidWalls.addSector(sector3);
+    SolidWalls.addSector(sector4);
+    SolidWalls.addSector(sector5);
     SolidWalls.addSector(sector6);
+
+    SolidGround.addSector(sector2);
+    SolidGround.addSector(sector3);
+    SolidGround.addSector(sector5);
+    SolidGround.addSector(sector6);
 
     const geo = new GeometrySector();
 
@@ -243,6 +253,7 @@ class Game {
     player.rotation.y = 45;
     player.addComponent(new PlayerController(camera));
     player.addComponent(new MovingEntity());
+    player.addComponent(new GravityController());
 
     const scene = new Scene();
     scene.addEntity(cube);

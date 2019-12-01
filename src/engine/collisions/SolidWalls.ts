@@ -1,8 +1,7 @@
 import Vector3 from 'engine/math/Vector3';
 import Sector from 'engine/Sector';
 import { vector2DLength, vector2DDot } from 'engine/math/Math';
-
-const WALL_STEP = 0.4;
+import CONFIG from 'Config';
 
 export class Wall {
   private _sector: Sector;
@@ -46,7 +45,7 @@ export class Wall {
 
     const topY = this._sector.getMaxTopY(x, z, r);
 
-    if ((box[1] >= this.y1 && box[1] >= topY - WALL_STEP) || (box[4] < this.y1 && box[4] < this.y2)) {
+    if ((box[1] >= this.y1 && box[1] >= topY - CONFIG.MAX_SLOPE) || (box[4] < this.y1 && box[4] < this.y2)) {
       return false;
     }
 
