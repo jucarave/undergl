@@ -9,14 +9,10 @@ class MovingEntity extends Component {
   private _movingBB: Array<number>;
   private _mvLine: Array<number>;
 
-  public radius: number;
-
   public readonly componentName: string = 'MovingEntity';
 
   constructor() {
     super();
-
-    this.radius = 0.4;
 
     this._movingBB = [0, 0, 0, 0, 0, 0];
     this._mvLine = [0, 0, 0, 0];
@@ -25,13 +21,13 @@ class MovingEntity extends Component {
   private _updateMovingBoundingBox(xTo: number, zTo: number) {
     const p = this._entity.position;
 
-    this._movingBB[0] = Math.min(p.x - this.radius, p.x - this.radius + xTo);
+    this._movingBB[0] = Math.min(p.x - this._entity.radius, p.x - this._entity.radius + xTo);
     this._movingBB[1] = p.y;
-    this._movingBB[2] = Math.min(p.z - this.radius, p.z - this.radius + zTo);
+    this._movingBB[2] = Math.min(p.z - this._entity.radius, p.z - this._entity.radius + zTo);
 
-    this._movingBB[3] = Math.max(p.x + this.radius, p.x + this.radius + xTo);
+    this._movingBB[3] = Math.max(p.x + this._entity.radius, p.x + this._entity.radius + xTo);
     this._movingBB[4] = p.y + 1.8;
-    this._movingBB[5] = Math.max(p.z + this.radius, p.z + this.radius + zTo);
+    this._movingBB[5] = Math.max(p.z + this._entity.radius, p.z + this._entity.radius + zTo);
   }
 
   private _setEntityAt(x: number, y: number, z: number) {
@@ -43,8 +39,8 @@ class MovingEntity extends Component {
   private _updateMvLine(xTo: number, zTo: number, wallNormal: Vector3) {
     const p = this._entity.position;
 
-    this._mvLine[0] = p.x - wallNormal.x * this.radius;
-    this._mvLine[1] = p.z - wallNormal.z * this.radius;
+    this._mvLine[0] = p.x - wallNormal.x * this._entity.radius;
+    this._mvLine[1] = p.z - wallNormal.z * this._entity.radius;
     this._mvLine[2] = this._mvLine[0] + xTo;
     this._mvLine[3] = this._mvLine[1] + zTo;
   }
@@ -61,7 +57,7 @@ class MovingEntity extends Component {
 
     const mvLength = vector2DLength(0, 0, xTo, zTo);
     const mvInverted = vector2DNormalized(-xTo, -zTo);
-    const walls = SolidWalls.getCollidingWalls(this._movingBB, p.x + xTo, p.z + zTo, this.radius);
+    const walls = SolidWalls.getCollidingWalls(this._movingBB, p.x + xTo, p.z + zTo, this._entity.radius);
 
     let collisionTime = 1.0;
     let collisionPoint: Array<number> = null;
@@ -93,7 +89,7 @@ class MovingEntity extends Component {
         // Does collides with a vertex?
         const vt = [wall.x1, wall.z1, wall.x2, wall.z2];
         for (let i = 0; i < 4; i += 2) {
-          const r = this.radius;
+          const r = this._entity.radius;
           const distance = wall.getDistanceToVertex(vt[0 + i], vt[1 + i], mvInverted[0], mvInverted[1], p.x, p.z, r);
 
           if (distance > 0.0) {

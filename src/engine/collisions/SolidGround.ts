@@ -13,7 +13,7 @@ class SolidGround {
     return this;
   }
 
-  public getMaxYAt(x: number, y: number, z: number): number {
+  public getMaxYAt(x: number, y: number, z: number, r: number): number {
     let maxY = 0;
 
     this._sectors.forEach((sector: Sector) => {
@@ -21,7 +21,7 @@ class SolidGround {
       if (sector.isPointInSector(x, z)) {
         topY = sector.getTopY(x, z);
       } else {
-        topY = sector.getCircleInSectorY(x, z);
+        topY = sector.getCircleInSectorY(x, z, r);
         if (topY === null) {
           return;
         }

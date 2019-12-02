@@ -146,7 +146,7 @@ class Sector {
     return count % 2 == 1;
   }
 
-  public getCircleInSectorY(x: number, y: number): number {
+  public getCircleInSectorY(x: number, y: number, r: number): number {
     // Circle vs walls routine
     const length = this._vertices.length;
 
@@ -155,7 +155,7 @@ class Sector {
 
     for (let i = 0; i < length; i++) {
       const n2 = n.next ? n.next : this._vertices.root;
-      const col = this._getCircleCollidingWithLinePoint(x, y, 0.4, n.value[0], n.value[1], n2.value[0], n2.value[1]);
+      const col = this._getCircleCollidingWithLinePoint(x, y, r, n.value[0], n.value[1], n2.value[0], n2.value[1]);
 
       if (col != null) {
         const yTop = this.getTopY(col[0], col[1]);

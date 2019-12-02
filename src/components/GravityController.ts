@@ -6,6 +6,7 @@ import CONFIG from 'Config';
 class GravityController extends Component {
   private _vspeed: number;
   private _gravity: number;
+  private _jumping: boolean;
 
   public readonly componentName: string = 'GravityController';
 
@@ -14,10 +15,12 @@ class GravityController extends Component {
 
     this._vspeed = 0;
     this._gravity = 12;
+    this._jumping = false;
   }
 
   public jump() {
     this._vspeed = 6;
+    this._jumping = true;
   }
 
   public update() {
@@ -27,11 +30,12 @@ class GravityController extends Component {
     this._vspeed -= this._gravity * Time.deltaTime;
     p.y += this._vspeed * Time.deltaTime;
 
-    const ground = SolidGround.getMaxYAt(p.x, p.y, p.z);
+    const ground = SolidGround.getMaxYAt(p.x, p.y, p.z, this._entity.radius);
 
-    if ((prevVSpeed === 0 && p.y - CONFIG.MAX_SLOPE <= ground) || p.y <= ground) {
+    if ((!this._jumping && prevVSpeed === 0 && p.y - CONFIG.MAX_SLOPE <= ground) || (p.y <= ground && this._vspeed < 0)) {
       p.y = ground;
       this._vspeed = 0;
+      this._jumping = false;
     }
   }
 }
