@@ -27,7 +27,7 @@ class SolidGround {
         }
       }
 
-      if (topY - CONFIG.MAX_SLOPE <= y) {
+      if (topY - CONFIG.MAX_SLOPE - 0.1 <= y) {
         maxY = Math.max(topY, maxY);
       }
     });

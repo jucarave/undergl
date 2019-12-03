@@ -18,6 +18,21 @@ class GravityController extends Component {
     this._jumping = false;
   }
 
+  private _climbToGround(ground: number) {
+    const p = this._entity.position;
+    if (ground > p.y) {
+      p.y += CONFIG.CLIMP_SPEED * Time.deltaTime;
+      if (p.y >= ground) {
+        p.y = ground;
+      }
+    } else {
+      p.y -= CONFIG.CLIMP_SPEED * Time.deltaTime;
+      if (p.y <= ground) {
+        p.y = ground;
+      }
+    }
+  }
+
   public jump() {
     this._vspeed = 6;
     this._jumping = true;
@@ -33,7 +48,8 @@ class GravityController extends Component {
     const ground = SolidGround.getMaxYAt(p.x, p.y, p.z, this._entity.radius);
 
     if ((!this._jumping && prevVSpeed === 0 && p.y - CONFIG.MAX_SLOPE <= ground) || (p.y <= ground && this._vspeed < 0)) {
-      p.y = ground;
+      this._climbToGround(ground);
+
       this._vspeed = 0;
       this._jumping = false;
     }
