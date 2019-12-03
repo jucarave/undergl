@@ -214,6 +214,7 @@ class Game {
 
     SolidGround.addSector(sector2);
     SolidGround.addSector(sector3);
+    SolidGround.addSector(sector4);
     SolidGround.addSector(sector5);
     SolidGround.addSector(sector6);
 

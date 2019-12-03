@@ -33,6 +33,31 @@ class GravityController extends Component {
     }
   }
 
+  private _updateGravityMovement() {
+    const p = this._entity.position;
+
+    this._vspeed -= this._gravity * Time.deltaTime;
+    const spd = this._vspeed * Time.deltaTime;
+
+    if (spd < 0) {
+      p.y += spd;
+      return;
+    }
+
+    const ceiling = SolidGround.getMinYAt(p.x, p.y, p.z, this._entity.radius, this._entity.height);
+    if (ceiling === Infinity) {
+      p.y += spd;
+      return;
+    }
+
+    if (p.y + 1.8 + spd >= ceiling) {
+      p.y = ceiling - 1.8;
+      this._vspeed = 0;
+    } else {
+      p.y += spd;
+    }
+  }
+
   public jump() {
     this._vspeed = 6;
     this._jumping = true;
@@ -42,8 +67,7 @@ class GravityController extends Component {
     const p = this._entity.position;
     const prevVSpeed = this._vspeed;
 
-    this._vspeed -= this._gravity * Time.deltaTime;
-    p.y += this._vspeed * Time.deltaTime;
+    this._updateGravityMovement();
 
     const ground = SolidGround.getMaxYAt(p.x, p.y, p.z, this._entity.radius);
 

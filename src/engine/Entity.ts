@@ -17,6 +17,7 @@ class Entity {
   public position: Vector3;
   public rotation: Vector3;
   public radius: number;
+  public height: number;
 
   constructor(position: Vector3, geometry?: Geometry, material?: Material) {
     this._components = [];
@@ -27,6 +28,7 @@ class Entity {
     this._transform = Matrix4.createIdentity();
     this._worldMatrix = Matrix4.createIdentity();
     this.radius = 0.4;
+    this.height = 1.8;
 
     this.position = position;
     this.position.onChange.add(() => (this._updateTransformMatrix = true), this);

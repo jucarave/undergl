@@ -34,6 +34,28 @@ class SolidGround {
 
     return maxY;
   }
+
+  public getMinYAt(x: number, y: number, z: number, r: number, height: number): number {
+    let minY = Infinity;
+
+    this._sectors.forEach((sector: Sector) => {
+      let bottomY = 0;
+      if (sector.isPointInSector(x, z)) {
+        bottomY = sector.getBottomY(x, z);
+      } else {
+        bottomY = sector.getCircleInSectorY(x, z, r);
+        if (bottomY === null) {
+          return;
+        }
+      }
+
+      if (bottomY >= y + height) {
+        minY = Math.min(bottomY, minY);
+      }
+    });
+
+    return minY;
+  }
 }
 
 export default new SolidGround();
