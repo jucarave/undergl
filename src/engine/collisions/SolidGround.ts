@@ -43,7 +43,7 @@ class SolidGround {
       if (sector.isPointInSector(x, z)) {
         bottomY = sector.getBottomY(x, z);
       } else {
-        bottomY = sector.getCircleInSectorY(x, z, r);
+        bottomY = sector.getCircleInSectorY(x, z, r, false);
         if (bottomY === null) {
           return;
         }

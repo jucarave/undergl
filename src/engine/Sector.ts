@@ -146,29 +146,37 @@ class Sector {
     return count % 2 == 1;
   }
 
-  public getCircleInSectorY(x: number, y: number, r: number): number {
+  public getCircleInSectorY(x: number, y: number, r: number, top: boolean = true): number {
     // Circle vs walls routine
     const length = this._vertices.length;
 
     let n = this._vertices.root;
-    let maxY: number = null;
+    let ret: number = null;
 
     for (let i = 0; i < length; i++) {
       const n2 = n.next ? n.next : this._vertices.root;
       const col = this._getCircleCollidingWithLinePoint(x, y, r, n.value[0], n.value[1], n2.value[0], n2.value[1]);
 
       if (col != null) {
-        const yTop = this.getTopY(col[0], col[1]);
+        if (top) {
+          const yTop = this.getTopY(col[0], col[1]);
 
-        if (maxY === null || yTop > maxY) {
-          maxY = yTop;
+          if (ret === null || yTop > ret) {
+            ret = yTop;
+          }
+        } else {
+          const yBottom = this.getBottomY(col[0], col[1]);
+
+          if (ret === null || yBottom < ret) {
+            ret = yBottom;
+          }
         }
       }
 
       n = n.next;
     }
 
-    return maxY;
+    return ret;
   }
 
   public getHeightFraction(x: number, y: number): number {
