@@ -207,7 +207,7 @@ class Sector {
   }
 
   public getSolidTop(x: number, y: number): number {
-    if (this._options.topSlope === 0.0) {
+    if ((!this._options.inverted && this._options.topSlope === 0.0) || (this._options.inverted && this._options.bottomSlope === 0.0)) {
       return this.yTop;
     }
 
@@ -215,7 +215,7 @@ class Sector {
   }
 
   public getSolidBottom(x: number, y: number): number {
-    if (this._options.topSlope === 0.0) {
+    if ((!this._options.inverted && this._options.bottomSlope === 0.0) || (this._options.inverted && this._options.topSlope === 0.0)) {
       return this.yBottom;
     }
 
