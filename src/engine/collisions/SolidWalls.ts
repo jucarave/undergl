@@ -126,9 +126,18 @@ class SolidWalls {
     let n = sector.vertices.root;
 
     for (let i = 0; i < len; i++) {
+      if (!n.value[2].solid) {
+        n = n.next;
+        continue;
+      }
+
       const n2 = n.next ? n.next : sector.vertices.root;
 
-      this.addWall(sector, n.value, n2.value, sector.y, sector.height);
+      if (sector.options.inverted) {
+        this.addWall(sector, n2.value, n.value, sector.y, sector.height);
+      } else {
+        this.addWall(sector, n.value, n2.value, sector.y, sector.height);
+      }
 
       n = n.next;
     }

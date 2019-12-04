@@ -19,7 +19,7 @@ class SolidGround {
     this._sectors.forEach((sector: Sector) => {
       let topY = 0;
       if (sector.isPointInSector(x, z)) {
-        topY = sector.getTopY(x, z);
+        topY = sector.getSolidTop(x, z);
       } else {
         topY = sector.getCircleInSectorY(x, z, r);
         if (topY === null) {
@@ -41,7 +41,7 @@ class SolidGround {
     this._sectors.forEach((sector: Sector) => {
       let bottomY = 0;
       if (sector.isPointInSector(x, z)) {
-        bottomY = sector.getBottomY(x, z);
+        bottomY = sector.getSolidBottom(x, z);
       } else {
         bottomY = sector.getCircleInSectorY(x, z, r, false);
         if (bottomY === null) {

@@ -21,6 +21,7 @@ interface SectorOptions {
 interface VerticeOptions {
   uvs?: Array<number>;
   normal?: Vector3;
+  solid?: boolean;
 }
 
 class Sector {
@@ -59,6 +60,7 @@ class Sector {
     }
 
     options.uvs = options.uvs !== undefined ? options.uvs : [0, 0, 1, 1];
+    options.solid = options.solid !== undefined ? options.solid : true;
 
     return options;
   }
@@ -204,6 +206,22 @@ class Sector {
     return f;
   }
 
+  public getSolidTop(x: number, y: number): number {
+    if (this._options.topSlope === 0.0) {
+      return this.yTop;
+    }
+
+    return this.yTop + this._options.topSlope * this.getHeightFraction(x, y);
+  }
+
+  public getSolidBottom(x: number, y: number): number {
+    if (this._options.topSlope === 0.0) {
+      return this.yBottom;
+    }
+
+    return this.yBottom + this._options.topSlope * this.getHeightFraction(x, y);
+  }
+
   public getTopY(x: number, y: number): number {
     if (this._options.topSlope === 0.0) {
       return this._y + this._height;
@@ -248,6 +266,14 @@ class Sector {
 
   public get height(): number {
     return this._height;
+  }
+
+  public get yBottom(): number {
+    return this._y + (this.options.inverted ? this._height : 0);
+  }
+
+  public get yTop(): number {
+    return this._y + (this.options.inverted ? 0 : this._height);
   }
 
   public get options(): SectorOptions {
