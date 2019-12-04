@@ -75,7 +75,7 @@ class GeometrySector extends Geometry {
     let tx = 0;
 
     for (let i = 0; i < len; i++) {
-      if (n.value[2].invisible) {
+      if (!n.value[2].uvs) {
         n = n.next;
         tx = 0;
         continue;
@@ -151,9 +151,14 @@ class GeometrySector extends Geometry {
   }
 
   public addSector(sector: Sector) {
-    this._addPlane(sector, sector.getBottomY.bind(sector), !sector.options.inverted, sector.options.floorUVs);
-    this._addPlane(sector, sector.getTopY.bind(sector), sector.options.inverted, sector.options.ceilingUVs);
-    this._addPlane;
+    if (sector.options.floorUVs !== null) {
+      this._addPlane(sector, sector.getBottomY.bind(sector), !sector.options.inverted, sector.options.floorUVs);
+    }
+
+    if (sector.options.ceilingUVs !== null) {
+      this._addPlane(sector, sector.getTopY.bind(sector), sector.options.inverted, sector.options.ceilingUVs);
+    }
+
     this._addWalls(sector);
   }
 }

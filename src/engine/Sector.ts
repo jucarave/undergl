@@ -19,7 +19,6 @@ interface SectorOptions {
 }
 
 interface VerticeOptions {
-  invisible?: boolean;
   uvs?: Array<number>;
   normal?: Vector3;
 }
@@ -59,7 +58,6 @@ class Sector {
       options = {};
     }
 
-    options.invisible = options.invisible !== undefined ? options.invisible : false;
     options.uvs = options.uvs !== undefined ? options.uvs : [0, 0, 1, 1];
 
     return options;
