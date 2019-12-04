@@ -226,6 +226,20 @@ class Sector {
     return this._y + this._options.bottomSlope * this.getHeightFraction(x, y);
   }
 
+  public translate(x: number, z: number): Sector {
+    this._vertices.forEach((vertice: Array<number>) => {
+      vertice[0] += x;
+      vertice[1] += z;
+
+      this._boundingBox[0] = Math.min(vertice[0], this._boundingBox[0]);
+      this._boundingBox[1] = Math.min(vertice[1], this._boundingBox[1]);
+      this._boundingBox[2] = Math.max(vertice[0], this._boundingBox[2]);
+      this._boundingBox[3] = Math.max(vertice[1], this._boundingBox[3]);
+    });
+
+    return this;
+  }
+
   public get vertices(): DoubleList {
     return this._vertices.clone();
   }

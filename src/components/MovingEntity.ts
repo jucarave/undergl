@@ -48,8 +48,7 @@ class MovingEntity extends Component {
   public moveTo(xTo: number, zTo: number, iteration: number) {
     const p = this._entity.position;
 
-    if (iteration >= 3) {
-      this._setEntityAt(p.x + xTo, p.y, p.z + zTo);
+    if (iteration > 2) {
       return;
     }
 
@@ -64,7 +63,7 @@ class MovingEntity extends Component {
 
     // Collision routine with each wall
     walls.forEach((wall: Wall) => {
-      if (!wall.isFacingMovement(xTo, zTo)) {
+      if (!wall.isFacingMovement(-mvInverted[0], -mvInverted[1])) {
         return;
       }
 

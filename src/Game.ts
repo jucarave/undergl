@@ -231,12 +231,58 @@ class Game {
     return geo;
   }
 
+  private _floatingSector() {
+    const texture = Texture.getTexture('textures');
+    const cobbleStone = texture.getUVS(38, 2, 32, 32);
+
+    const sector = new Sector(10.0, 3.0, {
+      floorUVs: cobbleStone,
+      ceilingUVs: cobbleStone,
+      topSlope: 0.0,
+      bottomSlope: 0.0,
+      slopeDir: SlopeDirection.WEST
+    });
+
+    sector
+      .addVertice(2, 0, { uvs: cobbleStone })
+      .addVertice(0, 2, { uvs: cobbleStone })
+      .addVertice(0, 4, { uvs: cobbleStone })
+      .addVertice(3, 7, { uvs: cobbleStone })
+      .addVertice(3, 9, { uvs: cobbleStone })
+      .addVertice(2, 9, { uvs: cobbleStone })
+      .addVertice(2, 12, { uvs: cobbleStone })
+      .addVertice(6, 12, { uvs: cobbleStone })
+      .addVertice(11, 7, { uvs: cobbleStone })
+      .addVertice(11, 5, { uvs: cobbleStone, invisible: true })
+      .addVertice(8, 5, { uvs: cobbleStone })
+      .addVertice(8, 7, { uvs: cobbleStone })
+      .addVertice(4, 4, { uvs: cobbleStone })
+      .addVertice(7, 4, { uvs: cobbleStone })
+      .addVertice(8, 5, { uvs: cobbleStone, invisible: true })
+      .addVertice(11, 5, { uvs: cobbleStone })
+      .addVertice(8, 0, { uvs: cobbleStone })
+      .translate(10, 0);
+
+    SolidWalls.addSector(sector);
+    SolidGround.addSector(sector);
+
+    const geo = new GeometrySector();
+    geo.addSector(sector);
+    geo.build();
+
+    return geo;
+  }
+
   private renderTestScene() {
     this._createCube();
 
     const cubeGeometry = this._createSector();
     const cubeMaterial = new MaterialSector(Texture.getTexture('textures'));
     const cube = new Entity(new Vector3(0, 0.0, 0), cubeGeometry, cubeMaterial);
+
+    const floatingGeometry = this._floatingSector();
+    const floatingMaterial = new MaterialSector(Texture.getTexture('textures'));
+    const floating = new Entity(new Vector3(0, 0.0, 0), floatingGeometry, floatingMaterial);
 
     const skyboxGeo = new GeometrySphere(900, 32, 16, true);
     const skyboxMat = new MaterialSkybox(Texture.getTexture('skybox'));
@@ -262,6 +308,7 @@ class Game {
     scene.addEntity(floor);
     scene.addEntity(player);
     scene.setCamera(camera);
+    scene.addEntity(floating);
 
     this.loopRender(scene);
   }

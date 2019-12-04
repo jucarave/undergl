@@ -35,17 +35,17 @@ export class Wall {
 
   public collidesWithBox(box: Array<number>, x: number, z: number, r: number): boolean {
     if (
-      (box[0] > this.x1 && box[0] > this.x2) ||
-      (box[3] < this.x1 && box[3] < this.x2) ||
-      (box[2] > this.z1 && box[2] > this.z2) ||
-      (box[5] < this.z1 && box[5] < this.z2)
+      box[0] > Math.max(this.x1, this.x2) ||
+      box[3] < Math.min(this.x1, this.x2) ||
+      box[2] > Math.max(this.z1, this.z2) ||
+      box[5] < Math.min(this.z1, this.z2)
     ) {
       return false;
     }
 
     const topY = this._sector.getMaxTopY(x, z, r);
 
-    if ((box[1] >= this.y1 && box[1] >= topY - CONFIG.MAX_SLOPE) || (box[4] < this.y1 && box[4] < this.y2)) {
+    if (box[1] >= Math.max(this.y1, topY - CONFIG.MAX_SLOPE) || box[4] < Math.min(this.y1, this.y2)) {
       return false;
     }
 
@@ -57,12 +57,7 @@ export class Wall {
   }
 
   public isPointInWall(x: number, y: number): boolean {
-    return !(
-      (x < this.x1 && x < this.x2) ||
-      (x > this.x1 && x > this.x2) ||
-      (y < this.z1 && y < this.z2) ||
-      (y > this.z1 && y > this.z2)
-    );
+    return !((x < this.x1 && x < this.x2) || (x > this.x1 && x > this.x2) || (y < this.z1 && y < this.z2) || (y > this.z1 && y > this.z2));
   }
 
   public getLinesIntersectionPoint(line: Array<number>): Array<number> {

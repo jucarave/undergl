@@ -13,8 +13,15 @@ class GeometrySector extends Geometry {
 
     let n = vertices.root;
     let ind = this._vertexData.length / 9;
+    let breakPoint = 100;
 
     while (vertices.length >= 3) {
+      if (breakPoint-- <= 0) {
+        console.error('cannot build');
+        vertices.destroy();
+        return;
+      }
+
       const root = vertices.root;
 
       const n2 = n.next ? n.next : root;
@@ -113,13 +120,17 @@ class GeometrySector extends Geometry {
     vertices.destroy();
   }
 
+  private _areVertexEqual(v1: Array<number>, v2: Array<number>): boolean {
+    return v2[0] === v1[0] && v2[1] === v1[1];
+  }
+
   private _pointsInTriangle(vertices: DoubleList, v1: Array<number>, v2: Array<number>, v3: Array<number>): boolean {
     let n = vertices.root;
 
     while (n) {
       const v = n.value;
 
-      if (v === v1 || v === v2 || v === v3) {
+      if (this._areVertexEqual(v, v1) || this._areVertexEqual(v, v2) || this._areVertexEqual(v, v3)) {
         n = n.next;
         continue;
       }
@@ -142,6 +153,7 @@ class GeometrySector extends Geometry {
   public addSector(sector: Sector) {
     this._addPlane(sector, sector.getBottomY.bind(sector), !sector.options.inverted, sector.options.floorUVs);
     this._addPlane(sector, sector.getTopY.bind(sector), sector.options.inverted, sector.options.ceilingUVs);
+    this._addPlane;
     this._addWalls(sector);
   }
 }
