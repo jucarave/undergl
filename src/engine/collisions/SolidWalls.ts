@@ -2,9 +2,14 @@ import Vector3 from 'engine/math/Vector3';
 import Sector from 'engine/Sector';
 import { vector2DLength, vector2DDot } from 'engine/math/Math';
 import CONFIG from 'Config';
+import { createUUID } from 'engine/system/Utils';
+
+const SIZE_OF_GRID = 5;
 
 export class Wall {
   private _sector: Sector;
+
+  public readonly id: string;
 
   public x1: number;
   public y1: number;
@@ -15,6 +20,8 @@ export class Wall {
   public normal: Vector3;
 
   constructor(sector: Sector, x1: number, y1: number, z1: number, x2: number, y2: number, z2: number) {
+    this.id = createUUID();
+
     this._sector = sector;
     this.x1 = x1;
     this.y1 = y1;
@@ -34,15 +41,6 @@ export class Wall {
   }
 
   public collidesWithBox(box: Array<number>, x: number, z: number, r: number): boolean {
-    if (
-      box[0] > Math.max(this.x1, this.x2) ||
-      box[3] < Math.min(this.x1, this.x2) ||
-      box[2] > Math.max(this.z1, this.z2) ||
-      box[5] < Math.min(this.z1, this.z2)
-    ) {
-      return false;
-    }
-
     const topY = this._sector.getMaxTopY(x, z, r);
 
     if (box[1] >= Math.max(this.y1, topY - CONFIG.MAX_SLOPE) || box[4] < Math.min(this.y1, this.y2)) {
@@ -110,13 +108,39 @@ export class Wall {
 
 class SolidWalls {
   private _walls: Array<Wall>;
+  private _gridWalls: Array<Array<Array<Wall>>>;
 
   constructor() {
     this._walls = [];
+
+    const sizeOfGrids = 100 / SIZE_OF_GRID;
+    this._gridWalls = [];
+    for (let i = 0; i < sizeOfGrids; i++) {
+      this._gridWalls[i] = [];
+      for (let j = 0; j < sizeOfGrids; j++) {
+        this._gridWalls[i][j] = [];
+      }
+    }
   }
 
   public addWall(sector: Sector, vertex1: Array<number>, vertex2: Array<number>, y: number, height: number) {
-    this._walls.push(new Wall(sector, vertex1[0], y, vertex1[1], vertex2[0], y + height, vertex2[1]));
+    const wall = new Wall(sector, vertex1[0], y, vertex1[1], vertex2[0], y + height, vertex2[1]);
+    this._walls.push(wall);
+
+    const dx = vertex2[0] - vertex1[0];
+    const dy = vertex2[1] - vertex1[1];
+    let f = 0.0;
+
+    while (f < 1.0) {
+      const wx = Math.floor((vertex1[0] + dx * f) / SIZE_OF_GRID);
+      const wy = Math.floor((vertex1[1] + dy * f) / SIZE_OF_GRID);
+
+      if (this._gridWalls[wy][wx].indexOf(wall) === -1) {
+        this._gridWalls[wy][wx].push(wall);
+      }
+
+      f += 0.1;
+    }
 
     return this;
   }
@@ -145,14 +169,44 @@ class SolidWalls {
     return this;
   }
 
+  private _getWallsOnGrid(x: number, y: number): Array<Wall> {
+    if (x < 0 || y < 0 || x >= 100 / SIZE_OF_GRID || y >= 100 / SIZE_OF_GRID) {
+      return [];
+    }
+
+    return this._gridWalls[y][x];
+  }
+
   public getCollidingWalls(box: Array<number>, x: number, z: number, r: number): Array<Wall> {
     const walls: Array<Wall> = [];
 
-    this._walls.forEach((wall: Wall) => {
-      if (wall.collidesWithBox(box, x, z, r)) {
-        walls.push(wall);
+    const coords = [0, 2, 3, 2, 0, 5, 3, 5];
+    const usedSectors: Array<string> = [];
+    const usedWalls: Array<string> = [];
+
+    for (let i = 0; i < 8; i += 2) {
+      const sx = Math.floor(box[coords[i]] / SIZE_OF_GRID);
+      const sz = Math.floor(box[coords[i + 1]] / SIZE_OF_GRID);
+      const sector = sx + '_' + sz;
+      if (usedSectors.indexOf(sector) !== -1) {
+        continue;
       }
-    });
+
+      usedSectors.push(sector);
+
+      const w = this._getWallsOnGrid(sx, sz);
+
+      w.forEach((wall: Wall) => {
+        if (usedWalls.indexOf(wall.id) !== -1) {
+          return;
+        }
+
+        usedWalls.push(wall.id);
+        if (wall.collidesWithBox(box, x, z, r)) {
+          walls.push(wall);
+        }
+      });
+    }
 
     return walls;
   }
