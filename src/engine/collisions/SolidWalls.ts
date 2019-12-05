@@ -2,9 +2,15 @@ import Vector3 from 'engine/math/Vector3';
 import Sector from 'engine/Sector';
 import { vector2DLength, vector2DDot } from 'engine/math/Math';
 import CONFIG from 'Config';
-import { createUUID } from 'engine/system/Utils';
+import { createUUID, isElementInArray } from 'engine/system/Utils';
 
+const SIZE_OF_WORLD = 100;
 const SIZE_OF_GRID = 5;
+const SIZE_PER_GRID = SIZE_OF_WORLD / SIZE_OF_GRID;
+
+const usedSectors = new Array(4);
+const usedWalls = new Array(20);
+const solidWalls = new Array(20);
 
 export class Wall {
   private _sector: Sector;
@@ -41,6 +47,15 @@ export class Wall {
   }
 
   public collidesWithBox(box: Array<number>, x: number, z: number, r: number): boolean {
+    if (
+      box[0] > Math.max(this.x1, this.x2) ||
+      box[3] < Math.min(this.x1, this.x2) ||
+      box[2] > Math.max(this.z1, this.z2) ||
+      box[5] < Math.min(this.z1, this.z2)
+    ) {
+      return false;
+    }
+
     const topY = this._sector.getMaxTopY(x, z, r);
 
     if (box[1] >= Math.max(this.y1, topY - CONFIG.MAX_SLOPE) || box[4] < Math.min(this.y1, this.y2)) {
@@ -113,7 +128,7 @@ class SolidWalls {
   constructor() {
     this._walls = [];
 
-    const sizeOfGrids = 100 / SIZE_OF_GRID;
+    const sizeOfGrids = SIZE_PER_GRID;
     this._gridWalls = [];
     for (let i = 0; i < sizeOfGrids; i++) {
       this._gridWalls[i] = [];
@@ -170,7 +185,7 @@ class SolidWalls {
   }
 
   private _getWallsOnGrid(x: number, y: number): Array<Wall> {
-    if (x < 0 || y < 0 || x >= 100 / SIZE_OF_GRID || y >= 100 / SIZE_OF_GRID) {
+    if (x < 0 || y < 0 || x >= SIZE_PER_GRID || y >= SIZE_PER_GRID) {
       return [];
     }
 
@@ -178,32 +193,38 @@ class SolidWalls {
   }
 
   public getCollidingWalls(box: Array<number>, x: number, z: number, r: number): Array<Wall> {
-    const walls: Array<Wall> = [];
+    const walls: Array<Wall> = solidWalls;
+    let wallsCount = 0;
+    walls.fill(null);
 
     const coords = [0, 2, 3, 2, 0, 5, 3, 5];
-    const usedSectors: Array<string> = [];
-    const usedWalls: Array<string> = [];
+
+    const us: Array<string> = usedSectors;
+    let usCount = 0;
+
+    const uw: Array<Wall> = usedWalls;
+    let uwCount = 0;
 
     for (let i = 0; i < 8; i += 2) {
       const sx = Math.floor(box[coords[i]] / SIZE_OF_GRID);
       const sz = Math.floor(box[coords[i + 1]] / SIZE_OF_GRID);
       const sector = sx + '_' + sz;
-      if (usedSectors.indexOf(sector) !== -1) {
+      if (isElementInArray(us, sector, usCount)) {
         continue;
       }
 
-      usedSectors.push(sector);
+      us[usCount++] = sector;
 
       const w = this._getWallsOnGrid(sx, sz);
 
       w.forEach((wall: Wall) => {
-        if (usedWalls.indexOf(wall.id) !== -1) {
+        if (isElementInArray(uw, wall, uwCount)) {
           return;
         }
 
-        usedWalls.push(wall.id);
+        uw[uwCount++] = wall;
         if (wall.collidesWithBox(box, x, z, r)) {
-          walls.push(wall);
+          walls[wallsCount++] = wall;
         }
       });
     }

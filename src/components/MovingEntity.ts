@@ -1,6 +1,6 @@
 import Component from 'engine/Component';
 import { vector2DLength, vector2DNormalized, vector2DDot } from 'engine/math/Math';
-import SolidWalls, { Wall } from 'engine/collisions/SolidWalls';
+import SolidWalls from 'engine/collisions/SolidWalls';
 import Vector3 from 'engine/math/Vector3';
 
 const VERY_CLOSE_DISTANCE = 0.8;
@@ -62,16 +62,23 @@ class MovingEntity extends Component {
     let collisionPoint: Array<number> = null;
 
     // Collision routine with each wall
-    walls.forEach((wall: Wall) => {
+    const wallsCount = walls.length;
+    for (let i = 0; i < wallsCount; i++) {
+      const wall = walls[i];
+
+      if (!wall) {
+        break;
+      }
+
       if (!wall.isFacingMovement(-mvInverted[0], -mvInverted[1])) {
-        return;
+        continue;
       }
 
       this._updateMvLine(xTo, zTo, wall.normal);
 
       const intersectionPoint = wall.getLinesIntersectionPoint(this._mvLine);
       if (intersectionPoint === null) {
-        return;
+        continue;
       }
 
       if (wall.isPointInWall(intersectionPoint[0], intersectionPoint[1])) {
@@ -102,7 +109,7 @@ class MovingEntity extends Component {
           }
         }
       }
-    });
+    }
 
     // Collision response
     if (collisionPoint !== null) {

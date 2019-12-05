@@ -9,3 +9,13 @@ export function createUUID(): string {
 
   return ret;
 }
+
+export function isElementInArray<T>(array: Array<T>, value: T, maxCount: number): boolean {
+  for (let i = 0; i < maxCount; i++) {
+    if (array[i] === value) {
+      return true;
+    }
+  }
+
+  return false;
+}
