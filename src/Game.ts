@@ -13,7 +13,7 @@ import GeometrySector from 'engine/geometries/GeometrySector';
 import Sector, { SlopeDirection } from 'engine/Sector';
 import MaterialSector from 'engine/materials/MaterialSector';
 import SolidWalls from 'engine/collisions/SolidWalls';
-import MovingEntity from 'components/MovingEntity';
+import MovementController from 'components/MovementController';
 import GravityController from 'components/GravityController';
 import SolidGround from 'engine/collisions/SolidGround';
 
@@ -300,7 +300,7 @@ class Game {
     const player = new Entity(new Vector3(-3, 0, 15));
     player.rotation.y = 45;
     player.addComponent(new PlayerController(camera));
-    player.addComponent(new MovingEntity());
+    player.addComponent(new MovementController());
     player.addComponent(new GravityController());
 
     const scene = new Scene();

@@ -5,7 +5,7 @@ import { degToRad } from 'engine/math/Math';
 import Vector3 from 'engine/math/Vector3';
 import Time from 'engine/system/Time';
 import CONFIG from 'Config';
-import MovingEntity from './MovingEntity';
+import MovementController from './MovementController';
 import GravityController from './GravityController';
 
 type KEYS = 'NONE' | 'LEFT' | 'UP' | 'RIGHT' | 'DOWN' | 'JUMP';
@@ -14,7 +14,7 @@ class PlayerController extends Component {
   private _camera: Camera;
   private _mouse: Vector3;
   private _speed: number;
-  private _movingEntity: MovingEntity;
+  private _movingController: MovementController;
   private _gravityController: GravityController;
   private _keys = {
     UP: 0,
@@ -39,7 +39,7 @@ class PlayerController extends Component {
     Input.onKeyUp.add(this._onKeyUp, this);
     Input.onMouseMove.add(this._onMouseMove, this);
 
-    this._movingEntity = this._entity.getComponent<MovingEntity>('MovingEntity');
+    this._movingController = this._entity.getComponent<MovementController>('MovementController');
     this._gravityController = this._entity.getComponent<GravityController>('GravityController');
   }
 
@@ -104,7 +104,7 @@ class PlayerController extends Component {
       const xTo = Math.cos(ang) * speed;
       const zTo = -Math.sin(ang) * speed;
 
-      this._movingEntity.moveTo(xTo, zTo, 1);
+      this._movingController.moveTo(xTo, zTo, 1);
     }
   }
 

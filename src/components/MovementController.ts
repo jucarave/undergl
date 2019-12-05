@@ -5,11 +5,11 @@ import Vector3 from 'engine/math/Vector3';
 
 const VERY_CLOSE_DISTANCE = 0.8;
 
-class MovingEntity extends Component {
+class MovementController extends Component {
   private _movingBB: Array<number>;
   private _mvLine: Array<number>;
 
-  public readonly componentName: string = 'MovingEntity';
+  public readonly componentName: string = 'MovementController';
 
   constructor() {
     super();
@@ -135,4 +135,4 @@ class MovingEntity extends Component {
   }
 }
 
-export default MovingEntity;
+export default MovementController;
