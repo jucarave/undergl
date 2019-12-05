@@ -3,8 +3,8 @@ import Sector from 'engine/Sector';
 import { vector2DLength, vector2DDot } from 'engine/math/Math';
 import CONFIG from 'Config';
 import { createUUID, isElementInArray } from 'engine/system/Utils';
+import { SIZE_OF_WORLD } from 'engine/system/Constants';
 
-const SIZE_OF_WORLD = 100;
 const SIZE_OF_GRID = 5;
 const SIZE_PER_GRID = SIZE_OF_WORLD / SIZE_OF_GRID;
 
@@ -124,6 +124,7 @@ export class Wall {
 class SolidWalls {
   private _walls: Array<Wall>;
   private _gridWalls: Array<Array<Array<Wall>>>;
+  private _bboxCorners = [0, 2, 3, 2, 0, 5, 3, 5];
 
   constructor() {
     this._walls = [];
@@ -197,8 +198,6 @@ class SolidWalls {
     let wallsCount = 0;
     walls.fill(null);
 
-    const coords = [0, 2, 3, 2, 0, 5, 3, 5];
-
     const us: Array<string> = usedSectors;
     let usCount = 0;
 
@@ -206,8 +205,8 @@ class SolidWalls {
     let uwCount = 0;
 
     for (let i = 0; i < 8; i += 2) {
-      const sx = Math.floor(box[coords[i]] / SIZE_OF_GRID);
-      const sz = Math.floor(box[coords[i + 1]] / SIZE_OF_GRID);
+      const sx = Math.floor(box[this._bboxCorners[i]] / SIZE_OF_GRID);
+      const sz = Math.floor(box[this._bboxCorners[i + 1]] / SIZE_OF_GRID);
       const sector = sx + '_' + sz;
       if (isElementInArray(us, sector, usCount)) {
         continue;

@@ -7,6 +7,7 @@ class GravityController extends Component {
   private _vspeed: number;
   private _gravity: number;
   private _jumping: boolean;
+  private _boundingBox: Array<number>;
 
   public readonly componentName: string = 'GravityController';
 
@@ -16,6 +17,7 @@ class GravityController extends Component {
     this._vspeed = 0;
     this._gravity = 12;
     this._jumping = false;
+    this._boundingBox = [0, 0, 0, 0, 0, 0];
   }
 
   private _climbToGround(ground: number) {
@@ -33,6 +35,19 @@ class GravityController extends Component {
     }
   }
 
+  private _updateBoundingBox() {
+    const p = this._entity.position;
+    const r = this._entity.radius;
+    const h = this._entity.height;
+
+    this._boundingBox[0] = p.x - r;
+    this._boundingBox[1] = p.y;
+    this._boundingBox[2] = p.z - r;
+    this._boundingBox[3] = p.x + r;
+    this._boundingBox[4] = p.y + h;
+    this._boundingBox[5] = p.z + r;
+  }
+
   private _updateGravityMovement() {
     const p = this._entity.position;
 
@@ -44,7 +59,7 @@ class GravityController extends Component {
       return;
     }
 
-    const ceiling = SolidGround.getMinYAt(p.x, p.y, p.z, this._entity.radius, this._entity.height);
+    const ceiling = SolidGround.getMinYAt(this._boundingBox, p.x, p.y, p.z, this._entity.radius, this._entity.height);
     if (ceiling === Infinity) {
       p.y += spd;
       return;
@@ -67,9 +82,11 @@ class GravityController extends Component {
     const p = this._entity.position;
     const prevVSpeed = this._vspeed;
 
+    this._updateBoundingBox();
+
     this._updateGravityMovement();
 
-    const ground = SolidGround.getMaxYAt(p.x, p.y, p.z, this._entity.radius);
+    const ground = SolidGround.getMaxYAt(this._boundingBox, p.x, p.y, p.z, this._entity.radius);
 
     if ((!this._jumping && prevVSpeed === 0 && p.y - CONFIG.MAX_SLOPE <= ground) || (p.y <= ground && this._vspeed < 0)) {
       this._climbToGround(ground);

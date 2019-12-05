@@ -279,6 +279,10 @@ class Sector {
   public get options(): SectorOptions {
     return this._options;
   }
+
+  public get boundingBox(): Array<number> {
+    return this._boundingBox;
+  }
 }
 
 export default Sector;
