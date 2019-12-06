@@ -25,6 +25,7 @@ interface VerticeOptions {
 }
 
 class Sector {
+  private _parent: Sector;
   private _boundingBox: Array<number>;
   private _vertices: DoubleList;
   private _options: SectorOptions;
@@ -120,6 +121,8 @@ class Sector {
     if (vector2DLength(wpx, wpy, px, py) <= r) {
       return [wpx, wpy];
     }
+
+    return null;
   }
 
   public isPointInSector(x: number, y: number): boolean {
@@ -159,13 +162,28 @@ class Sector {
 
       if (col != null) {
         if (top) {
-          const yTop = this.getTopY(col[0], col[1]);
+          let yTop;
+          if (this._parent) {
+            yTop = this._parent.getBottomY(col[0], col[1]);
+          } else {
+            if (this._options.inverted) {
+              yTop = this.getBottomY(col[0], col[1]);
+            } else {
+              yTop = this.getTopY(col[0], col[1]);
+            }
+          }
 
           if (ret === null || yTop > ret) {
             ret = yTop;
           }
         } else {
-          const yBottom = this.getBottomY(col[0], col[1]);
+          let yBottom;
+
+          if (this._parent) {
+            yBottom = this._parent.getTopY(col[0], col[1]);
+          } else {
+            yBottom = this.getBottomY(col[0], col[1]);
+          }
 
           if (ret === null || yBottom < ret) {
             ret = yBottom;
@@ -211,6 +229,10 @@ class Sector {
       return this.yTop;
     }
 
+    if (this._options.inverted) {
+      return this.yTop + this._options.bottomSlope * this.getHeightFraction(x, y);
+    }
+
     return this.yTop + this._options.topSlope * this.getHeightFraction(x, y);
   }
 
@@ -234,6 +256,10 @@ class Sector {
     return Math.max(this.getTopY(x - r, y - r), this.getTopY(x + r, y - r), this.getTopY(x - r, y + r), this.getTopY(x + r, y + r));
   }
 
+  public getMaxBottomY(x: number, y: number, r: number): number {
+    return Math.max(this.getBottomY(x - r, y - r), this.getBottomY(x + r, y - r), this.getBottomY(x - r, y + r), this.getBottomY(x + r, y + r));
+  }
+
   public getBottomY(x: number, y: number): number {
     if (this._options.bottomSlope === 0.0) {
       return this._y;
@@ -252,6 +278,12 @@ class Sector {
       this._boundingBox[2] = Math.max(vertice[0], this._boundingBox[2]);
       this._boundingBox[3] = Math.max(vertice[1], this._boundingBox[3]);
     });
+
+    return this;
+  }
+
+  public setParent(parent: Sector): Sector {
+    this._parent = parent;
 
     return this;
   }
@@ -282,6 +314,10 @@ class Sector {
 
   public get boundingBox(): Array<number> {
     return this._boundingBox;
+  }
+
+  public get parent(): Sector {
+    return this._parent;
   }
 }
 

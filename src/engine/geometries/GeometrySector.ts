@@ -2,6 +2,7 @@ import Geometry from './Geometry';
 import { angleVectors2D, radToDeg, vector2DLength } from 'engine/math/Math';
 import DoubleList from 'engine/system/DoubleList';
 import Sector from 'engine/Sector';
+import SolidWalls from 'engine/collisions/SolidWalls';
 
 class GeometrySector extends Geometry {
   constructor() {
@@ -64,7 +65,7 @@ class GeometrySector extends Geometry {
     vertices.destroy();
   }
 
-  private _addWalls(sector: Sector): void {
+  private _addWalls(sector: Sector, lowerWall: boolean = true): void {
     const vertices = sector.vertices;
     const inverted = sector.options.inverted;
 
@@ -85,10 +86,40 @@ class GeometrySector extends Geometry {
       const tw = tx + vector2DLength(n.value[0], n.value[1], n2.value[0], n2.value[1]);
       const uvs = n.value[2].uvs;
 
-      const y1 = sector.getBottomY(n.value[0], n.value[1]);
-      const y2 = sector.getBottomY(n2.value[0], n2.value[1]);
-      const h1 = sector.getTopY(n.value[0], n.value[1]);
-      const h2 = sector.getTopY(n2.value[0], n2.value[1]);
+      let y1, y2, h1, h2;
+
+      if (sector.parent) {
+        if (lowerWall) {
+          y1 = sector.getBottomY(n.value[0], n.value[1]);
+          y2 = sector.getBottomY(n2.value[0], n2.value[1]);
+          h1 = sector.parent.getBottomY(n.value[0], n.value[1]);
+          h2 = sector.parent.getBottomY(n2.value[0], n2.value[1]);
+        } else {
+          y1 = sector.parent.getTopY(n.value[0], n.value[1]);
+          y2 = sector.parent.getTopY(n2.value[0], n2.value[1]);
+          h1 = sector.getTopY(n.value[0], n.value[1]);
+          h2 = sector.getTopY(n2.value[0], n2.value[1]);
+        }
+      } else {
+        y1 = sector.getBottomY(n.value[0], n.value[1]);
+        y2 = sector.getBottomY(n2.value[0], n2.value[1]);
+        h1 = sector.getTopY(n.value[0], n.value[1]);
+        h2 = sector.getTopY(n2.value[0], n2.value[1]);
+      }
+
+      let invert = inverted;
+      if (h1 < y1) {
+        const h = y1;
+        y1 = h1;
+        h1 = h;
+        invert = !invert;
+      }
+
+      if (h2 < y2) {
+        const h = y2;
+        y2 = h2;
+        h2 = h;
+      }
 
       this.addVertex(n.value[0], y1, n.value[1])
         .addTexCoord(tx, y1)
@@ -106,10 +137,12 @@ class GeometrySector extends Geometry {
         .addTexCoord(tw, h2)
         .addUVs(uvs[0], uvs[1], uvs[2], uvs[3]);
 
-      if (inverted) {
+      if (invert) {
         this.addTriangle(ind, ind + 2, ind + 1).addTriangle(ind + 1, ind + 2, ind + 3);
+        SolidWalls.addWall(sector, n2.value[0], y2, h2, n2.value[1], n.value[0], y1, h1, n.value[1]);
       } else {
         this.addTriangle(ind, ind + 1, ind + 2).addTriangle(ind + 1, ind + 3, ind + 2);
+        SolidWalls.addWall(sector, n.value[0], y1, h1, n.value[1], n2.value[0], y2, h2, n2.value[1]);
       }
 
       ind += 4;
@@ -159,7 +192,12 @@ class GeometrySector extends Geometry {
       this._addPlane(sector, sector.getTopY.bind(sector), sector.options.inverted, sector.options.ceilingUVs);
     }
 
-    this._addWalls(sector);
+    if (sector.parent) {
+      this._addWalls(sector, true);
+      this._addWalls(sector, false);
+    } else {
+      this._addWalls(sector);
+    }
   }
 }
 

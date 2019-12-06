@@ -14,36 +14,72 @@ const solidWalls = new Array(20);
 
 export class Wall {
   private _sector: Sector;
+  private _dx: number;
+  private _dy: number;
+  private _dh: number;
+  private _dz: number;
 
   public readonly id: string;
 
   public x1: number;
   public y1: number;
+  public h1: number;
   public z1: number;
   public x2: number;
   public y2: number;
+  public h2: number;
   public z2: number;
   public normal: Vector3;
 
-  constructor(sector: Sector, x1: number, y1: number, z1: number, x2: number, y2: number, z2: number) {
+  constructor(sector: Sector, x1: number, y1: number, h1: number, z1: number, x2: number, y2: number, h2: number, z2: number) {
     this.id = createUUID();
 
     this._sector = sector;
     this.x1 = x1;
-    this.y1 = y1;
+    this.y1 = Math.min(y1, h1);
+    this.h1 = Math.max(y1, h1) - this.y1;
     this.z1 = z1;
     this.x2 = x2;
-    this.y2 = y2;
+    this.y2 = Math.min(y2, h2);
+    this.h2 = Math.max(y2, h2) - this.y2;
     this.z2 = z2;
 
     this._calculateNormals();
   }
 
   private _calculateNormals() {
-    const dx = this.x2 - this.x1;
-    const dz = this.z2 - this.z1;
+    this._dx = this.x2 - this.x1;
+    this._dy = this.y2 - this.y1;
+    this._dh = this.h2 + this.y2 - (this.h1 + this.y1);
+    this._dz = this.z2 - this.z1;
 
-    this.normal = new Vector3(-dz, 0, dx).normalize();
+    this.normal = new Vector3(-this._dz, 0, this._dx).normalize();
+  }
+
+  public getPointInLineFraction(x: number, z: number): number {
+    const px = x - this.x1;
+    const pz = z - this.z1;
+
+    const l = vector2DDot(this._dx, this._dz, this._dx, this._dz);
+    const dot = vector2DDot(this._dx, this._dz, px, pz) / l;
+
+    return dot;
+  }
+
+  public getTop(x: number, z: number): number {
+    return this.y1 + this.h1 + this._dh * this.getPointInLineFraction(x, z);
+  }
+
+  public getBottom(x: number, z: number): number {
+    return this.y1 + this._dy * this.getPointInLineFraction(x, z);
+  }
+
+  public getMaxTop(x: number, z: number, r: number): number {
+    return Math.max(this.getTop(x - r, z - r), this.getTop(x + r, z - r), this.getTop(x - r, z + r), this.getTop(x + r, z + r));
+  }
+
+  public getMaxBottom(x: number, z: number, r: number): number {
+    return Math.max(this.getBottom(x - r, z - r), this.getBottom(x + r, z - r), this.getBottom(x - r, z + r), this.getBottom(x + r, z + r));
   }
 
   public collidesWithBox(box: Array<number>, x: number, z: number, r: number): boolean {
@@ -56,9 +92,10 @@ export class Wall {
       return false;
     }
 
-    const topY = this._sector.getMaxTopY(x, z, r);
+    const y1 = this.getMaxBottom(x, z, r);
+    const y2 = this.getMaxTop(x, z, r);
 
-    if (box[1] >= Math.max(this.y1, topY - CONFIG.MAX_SLOPE) || box[4] < Math.min(this.y1, this.y2)) {
+    if (box[1] >= y2 - CONFIG.MAX_SLOPE || box[4] < y1) {
       return false;
     }
 
@@ -119,6 +156,10 @@ export class Wall {
 
     return vtcDotrd - Math.sqrt(d);
   }
+
+  public get sector(): Sector {
+    return this._sector;
+  }
 }
 
 class SolidWalls {
@@ -139,17 +180,17 @@ class SolidWalls {
     }
   }
 
-  public addWall(sector: Sector, vertex1: Array<number>, vertex2: Array<number>, y: number, height: number) {
-    const wall = new Wall(sector, vertex1[0], y, vertex1[1], vertex2[0], y + height, vertex2[1]);
+  public addWall(sector: Sector, x1: number, y1: number, h1: number, z1: number, x2: number, y2: number, h2: number, z2: number): SolidWalls {
+    const wall = new Wall(sector, x1, y1, h1, z1, x2, y2, h2, z2);
     this._walls.push(wall);
 
-    const dx = vertex2[0] - vertex1[0];
-    const dy = vertex2[1] - vertex1[1];
+    const dx = x2 - x1;
+    const dy = z2 - z1;
     let f = 0.0;
 
     while (f < 1.0) {
-      const wx = Math.floor((vertex1[0] + dx * f) / SIZE_OF_GRID);
-      const wy = Math.floor((vertex1[1] + dy * f) / SIZE_OF_GRID);
+      const wx = Math.floor((x1 + dx * f) / SIZE_OF_GRID);
+      const wy = Math.floor((z1 + dy * f) / SIZE_OF_GRID);
 
       if (this._gridWalls[wy][wx].indexOf(wall) === -1) {
         this._gridWalls[wy][wx].push(wall);
@@ -172,11 +213,12 @@ class SolidWalls {
       }
 
       const n2 = n.next ? n.next : sector.vertices.root;
+      n2;
 
       if (sector.options.inverted) {
-        this.addWall(sector, n2.value, n.value, sector.y, sector.height);
+        //this.addWall(sector, n2.value, n.value, sector.y, sector.height);
       } else {
-        this.addWall(sector, n.value, n2.value, sector.y, sector.height);
+        //this.addWall(sector, n.value, n2.value, sector.y, sector.height);
       }
 
       n = n.next;

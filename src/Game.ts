@@ -12,7 +12,7 @@ import GeometrySphere from 'engine/geometries/GeometrySphere';
 import GeometrySector from 'engine/geometries/GeometrySector';
 import Sector, { SlopeDirection } from 'engine/Sector';
 import MaterialSector from 'engine/materials/MaterialSector';
-import SolidWalls from 'engine/collisions/SolidWalls';
+//import SolidWalls from 'engine/collisions/SolidWalls';
 import MovementController from 'components/MovementController';
 import GravityController from 'components/GravityController';
 import SolidGround from 'engine/collisions/SolidGround';
@@ -149,10 +149,10 @@ class Game {
       slopeDir: SlopeDirection.WEST
     });
 
-    const sector6 = new Sector(0.0, 0.0, {
+    const sector6 = new Sector(0.0, 0.4, {
       floorUVs: cobbleStone,
       ceilingUVs: cobbleStone,
-      topSlope: 2.0,
+      topSlope: 0.0,
       bottomSlope: 0.0,
       slopeDir: SlopeDirection.EAST
     });
@@ -205,12 +205,12 @@ class Game {
       .addVertice(4, 0 + 15, { uvs: cobbleStone })
       .addVertice(2, 0 + 15, { uvs: cobbleStone });
 
-    SolidWalls.addSector(sector);
+    /*SolidWalls.addSector(sector);
     SolidWalls.addSector(sector2);
     SolidWalls.addSector(sector3);
     SolidWalls.addSector(sector4);
     SolidWalls.addSector(sector5);
-    SolidWalls.addSector(sector6);
+    SolidWalls.addSector(sector6);*/
 
     SolidGround.addSector(sector2);
     SolidGround.addSector(sector3);
@@ -239,8 +239,8 @@ class Game {
       floorUVs: cobbleStone,
       ceilingUVs: cobbleStone,
       topSlope: 0.0,
-      bottomSlope: 0.0,
-      slopeDir: SlopeDirection.WEST,
+      bottomSlope: -6.0,
+      slopeDir: SlopeDirection.NORTH,
       inverted: true
     });
 
@@ -255,20 +255,39 @@ class Game {
       .addVertice(6, 12, { uvs: cobbleStone })
       .addVertice(11, 7, { uvs: cobbleStone })
       .addVertice(11, 5, { uvs: null, solid: false })
-      .addVertice(8, 5, { uvs: cobbleStone })
-      .addVertice(8, 7, { uvs: cobbleStone })
-      .addVertice(4, 4, { uvs: cobbleStone })
-      .addVertice(7, 4, { uvs: cobbleStone })
+      .addVertice(8, 5, { uvs: null, solid: false })
+      .addVertice(8, 7, { uvs: null, solid: false })
+      .addVertice(4, 4, { uvs: null, solid: false })
+      .addVertice(7, 4, { uvs: null, solid: false })
       .addVertice(8, 5, { uvs: null, solid: false })
       .addVertice(11, 5, { uvs: cobbleStone })
       .addVertice(8, 0, { uvs: cobbleStone })
       .translate(10, 0);
 
-    SolidWalls.addSector(sector);
+    //SolidWalls.addSector(sector);
     SolidGround.addSector(sector);
+
+    const sector2 = new Sector(7.6, 8.8, {
+      floorUVs: cobbleStone,
+      ceilingUVs: cobbleStone,
+      inverted: true
+    });
+
+    sector2
+      .addVertice(8, 5, { uvs: cobbleStone })
+      .addVertice(7, 4, { uvs: cobbleStone })
+      .addVertice(4, 4, { uvs: cobbleStone })
+      .addVertice(8, 7, { uvs: cobbleStone })
+      .addVertice(8, 5, { uvs: cobbleStone })
+      .setParent(sector)
+      .translate(10, 0);
+
+    //SolidWalls.addSector(sector2);
+    SolidGround.addSector(sector2);
 
     const geo = new GeometrySector();
     geo.addSector(sector);
+    geo.addSector(sector2);
     geo.build();
 
     return geo;
