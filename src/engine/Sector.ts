@@ -160,34 +160,41 @@ class Sector {
       const n2 = n.next ? n.next : this._vertices.root;
       const col = this._getCircleCollidingWithLinePoint(x, y, r, n.value[0], n.value[1], n2.value[0], n2.value[1]);
 
-      if (col != null) {
-        if (top) {
-          let yTop;
-          if (this._parent) {
-            yTop = this._parent.getBottomY(col[0], col[1]);
-          } else {
-            if (this._options.inverted) {
-              yTop = this.getBottomY(col[0], col[1]);
-            } else {
-              yTop = this.getTopY(col[0], col[1]);
-            }
-          }
+      if (col === null) {
+        n = n.next;
+        continue;
+      }
 
-          if (ret === null || yTop > ret) {
-            ret = yTop;
-          }
+      if (top) {
+        let yTop;
+        if (this._parent) {
+          yTop = Math.max(this._parent.getBottomY(col[0], col[1]), this.getBottomY(col[0], col[1]));
         } else {
-          let yBottom;
+          if (this._options.inverted) {
+            yTop = this.getBottomY(col[0], col[1]);
+          } else {
+            yTop = this.getTopY(col[0], col[1]);
+          }
+        }
 
-          if (this._parent) {
-            yBottom = this._parent.getTopY(col[0], col[1]);
+        if (ret === null || yTop > ret) {
+          ret = yTop;
+        }
+      } else {
+        let yBottom;
+
+        if (this._parent) {
+          yBottom = Math.min(this._parent.getTopY(col[0], col[1]), this.getTopY(col[0], col[1]));
+        } else {
+          if (this._options.inverted) {
+            yBottom = this.getTopY(col[0], col[1]);
           } else {
             yBottom = this.getBottomY(col[0], col[1]);
           }
+        }
 
-          if (ret === null || yBottom < ret) {
-            ret = yBottom;
-          }
+        if (ret === null || yBottom < ret) {
+          ret = yBottom;
         }
       }
 

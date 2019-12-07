@@ -76,7 +76,7 @@ class SolidGround {
     return sectors;
   }
 
-  public getMaxYAt(box: Array<number>, x: number, y: number, z: number, r: number): number {
+  public getMaxYAt(box: Array<number>, x: number, z: number, r: number): number {
     let maxY = 0;
 
     this._getCollidingSectors(box).forEach((sector: Sector) => {
@@ -90,7 +90,7 @@ class SolidGround {
         }
       }
 
-      if (topY - CONFIG.MAX_SLOPE - 0.1 <= y) {
+      if (topY - CONFIG.MAX_SLOPE < box[4]) {
         maxY = Math.max(topY, maxY);
       }
     });

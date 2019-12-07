@@ -149,10 +149,10 @@ class Game {
       slopeDir: SlopeDirection.WEST
     });
 
-    const sector6 = new Sector(0.0, 0.4, {
+    const sector6 = new Sector(0.0, 0.0, {
       floorUVs: cobbleStone,
       ceilingUVs: cobbleStone,
-      topSlope: 0.0,
+      topSlope: 2.0,
       bottomSlope: 0.0,
       slopeDir: SlopeDirection.EAST
     });

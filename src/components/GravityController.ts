@@ -86,7 +86,7 @@ class GravityController extends Component {
 
     this._updateGravityMovement();
 
-    const ground = SolidGround.getMaxYAt(this._boundingBox, p.x, p.y, p.z, this._entity.radius);
+    const ground = SolidGround.getMaxYAt(this._boundingBox, p.x, p.z, this._entity.radius);
 
     if ((!this._jumping && prevVSpeed === 0 && p.y - CONFIG.MAX_SLOPE <= ground) || (p.y <= ground && this._vspeed < 0)) {
       this._climbToGround(ground);
